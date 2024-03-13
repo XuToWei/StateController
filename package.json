@@ -1,6 +1,6 @@
 {
-  "name": "me.xw.codebind",
-  "version": "1.0.3",
+  "name": "me.xw.statecontroller",
+  "version": "1.0.0",
   "displayName": "StateController",
   "description": "better StateController",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "unity": "2019.4",
   "documentationUrl": "",
-  "licensesUrl": "",
+  "licensesUrl": "https://github.com/XuToWei/StateController/blob/master/LICENSE.md",
   "dependencies": {
   },
   "keywords": [
