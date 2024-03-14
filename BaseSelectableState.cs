@@ -36,9 +36,9 @@ namespace StateController
             if (m_Data != null)
             {
                 m_StateDataDict.Clear();
-                for (int i = 0; i < m_Data.Editor_StateNames.Count; i++)
+                for (int i = 0; i < m_Data.StateNames.Count; i++)
                 {
-                    m_StateDataDict.Add(m_Data.Editor_StateNames[i], m_StateDatas[i]);
+                    m_StateDataDict.Add(m_Data.StateNames[i], m_StateDatas[i]);
                 }
             }
         }
@@ -56,7 +56,7 @@ namespace StateController
         protected abstract void OnStateChanged(T stateData);
 
 #if UNITY_EDITOR
-        internal override void Editor_OnRefresh()
+        internal override void EditorOnRefresh()
         {
             RefreshData();
         }
@@ -76,7 +76,7 @@ namespace StateController
                 m_StateDatas.RemoveAt(index);
                 if (m_StateDataDict != null)
                 {
-                    m_StateDataDict.Remove(m_Data.Editor_StateNames[index]);
+                    m_StateDataDict.Remove(m_Data.StateNames[index]);
                 }
             }
         }
@@ -88,21 +88,21 @@ namespace StateController
 
         private void RefreshData()
         {
-            m_Data = Editor_Controller.Editor_GetData(m_DataName);
+            m_Data = EditorController.EditorGetData(m_DataName);
             if (m_Data != null)
             {
-                for (int i = m_StateDatas.Count; i < m_Data.Editor_StateNames.Count; i++)
+                for (int i = m_StateDatas.Count; i < m_Data.StateNames.Count; i++)
                 {
                     m_StateDatas.Add(new T());
                 }
-                for (int i = m_StateDatas.Count - 1; i >= m_Data.Editor_StateNames.Count; i--)
+                for (int i = m_StateDatas.Count - 1; i >= m_Data.StateNames.Count; i--)
                 {
                     m_StateDatas.RemoveAt(i);
                 }
                 m_StateDataDict.Clear();
-                for (int i = 0; i < m_Data.Editor_StateNames.Count; i++)
+                for (int i = 0; i < m_Data.StateNames.Count; i++)
                 {
-                    m_StateDataDict.Add(m_Data.Editor_StateNames[i], m_StateDatas[i]);
+                    m_StateDataDict.Add(m_Data.StateNames[i], m_StateDatas[i]);
                 }
             }
             else
@@ -114,7 +114,7 @@ namespace StateController
 
         private List<string> GetDataNames()
         {
-            return Editor_Controller.GetAllDataNames();
+            return EditorController.EditorGetAllDataNames();
         }
 
         private bool IsSelectedData()
@@ -124,7 +124,7 @@ namespace StateController
 
         private void OnSelectedData()
         {
-            m_Data = Editor_Controller.Editor_GetData(m_DataName);
+            m_Data = EditorController.EditorGetData(m_DataName);
             RefreshData();
         }
 
@@ -135,10 +135,21 @@ namespace StateController
 
         private void OnStateDataEndGUI(int selectionIndex)
         {
-            bool enable = GUI.enabled;
             GUI.enabled = false;
-            GUILayout.TextField(m_Data.Editor_StateNames[selectionIndex]);
-            GUI.enabled = enable;
+            GUILayout.TextField(m_Data.StateNames[selectionIndex]);
+            GUI.enabled = true;
+            var color = GUI.color;
+            if (m_Data.SelectedName == m_Data.StateNames[selectionIndex])
+            {
+                GUI.color = new Color(0,1,0);
+            }
+            if (GUILayout.Button("Apply", GUILayout.Width(80)))
+            {
+                EditorController.EditorOnInit();
+                m_Data.SelectedName = m_Data.StateNames[selectionIndex];
+                EditorController.EditorRefresh();
+            }
+            GUI.color = color;
             GUILayout.EndHorizontal();
         }
 #endif

@@ -19,20 +19,16 @@ namespace StateController
     [RequireComponent(typeof(Image))]
     public class StateImage : BaseSelectableState<ImageStateData>
     {
-        [SerializeField]
         private Image m_Image;
+
+        private void Awake()
+        {
+            m_Image = GetComponent<Image>();
+        }
 
         protected override void OnStateChanged(ImageStateData stateData)
         {
             m_Image.sprite = stateData.Sprite;
         }
-
-#if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-            m_Image = GetComponent<Image>();
-        }
-#endif
     }
 }
