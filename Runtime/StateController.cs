@@ -15,6 +15,7 @@ namespace StateController
 
         private void Awake()
         {
+            m_States.Clear();
             GetComponentsInChildren<BaseState>(true, m_States);
             foreach (var data in m_ControllerDatas)
             {

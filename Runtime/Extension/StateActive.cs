@@ -3,7 +3,7 @@ using UnityEngine;
 namespace StateController
 {
     [DisallowMultipleComponent]
-    public class SateActive : BaseBooleanLogicState
+    public class StateActive : BaseBooleanLogicState
     {
         protected override void OnStateChanged(bool logicResult)
         {

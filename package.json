@@ -18,5 +18,12 @@
     "name": "Xu Wei",
     "email": "",
     "url": ""
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "Contains StateController demo",
+      "path": "Samples~/Demo"
+    }
+  ]
 }

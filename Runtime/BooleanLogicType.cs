@@ -1,5 +1,8 @@
+using Sirenix.OdinInspector;
+
 namespace StateController
 {
+    [LabelText("Boolean Logic")]
     public enum BooleanLogicType : byte
     {
         None = 0,

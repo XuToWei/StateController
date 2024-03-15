@@ -5,7 +5,7 @@ using UnityEngine;
 namespace StateController
 {
     [Serializable]
-    public sealed class StateControllerData
+    public sealed partial class StateControllerData
     { 
         [SerializeField]
         private string m_Name;
@@ -14,14 +14,12 @@ namespace StateController
 
         private string m_SelectedName;
         private StateController m_Controller;
+        public string Name => m_Name;
         public List<string> StateNames => m_StateNames;
 
         public string SelectedName
         {
-            get
-            {
-                return m_SelectedName;
-            }
+            get => m_SelectedName;
             set
             {
                 if (!m_StateNames.Contains(value))
@@ -40,17 +38,5 @@ namespace StateController
         {
             m_Controller = controller;
         }
-
-#if UNITY_EDITOR
-        internal string Editor_SelectedName
-        {
-            set => m_SelectedName = value;
-        }
-        internal string Name
-        {
-            get => m_Name;
-            set => m_Name = value;
-        }
-#endif
     }
 }
