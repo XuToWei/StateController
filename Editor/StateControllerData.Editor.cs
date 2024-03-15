@@ -21,6 +21,10 @@ namespace StateController
                 m_EditorSelectedName = value;
                 foreach (var state in m_EditorController.EditorStates)
                 {
+                    state.OnInit();
+                }
+                foreach (var state in m_EditorController.EditorStates)
+                {
                     state.EditorOnRefresh();
                 }
                 EditorApplication.QueuePlayerLoopUpdate();

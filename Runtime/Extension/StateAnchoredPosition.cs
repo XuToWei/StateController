@@ -2,14 +2,15 @@
 
 namespace StateController
 {
-    [ExecuteAlways]
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
     public class StateAnchoredPosition : BaseSelectableState<Vector2>
     {
         private RectTransform m_RectTransform;
 
-        private void Awake()
+        protected internal override void OnInit()
         {
+            base.OnInit();
             m_RectTransform = GetComponent<RectTransform>();
         }
 

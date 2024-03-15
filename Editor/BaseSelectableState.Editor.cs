@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -77,9 +78,17 @@ namespace StateController
             var data = EditorData;
             if (data != null)
             {
+                bool canCreate = typeof(T).GetConstructor(Type.EmptyTypes) != null;
                 for (int i = EditorStateDatas.Count; i < data.EditorStateNames.Count; i++)
                 {
-                    EditorStateDatas.Add(default);
+                    if (canCreate)
+                    {
+                        EditorStateDatas.Add(Activator.CreateInstance<T>());
+                    }
+                    else
+                    {
+                        EditorStateDatas.Add(default);
+                    }
                 }
                 for (int i = EditorStateDatas.Count - 1; i >= data.EditorStateNames.Count; i--)
                 {

@@ -4,7 +4,16 @@ namespace StateController
 {
     public abstract partial class BaseState : MonoBehaviour
     {
-        internal abstract void OnInit(StateController controller);
+        internal virtual void OnInit(StateController controller)
+        {
+            OnInit();
+        }
+
         internal abstract void OnRefresh();
+
+        protected internal virtual void OnInit()
+        {
+            
+        }
     }
 }
