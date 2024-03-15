@@ -276,7 +276,7 @@ namespace StateController
         {
             GUI.enabled = false;
             var data1 = EditorData1;
-            GUILayout.TextField(data1.EditorStateNames[selectionIndex], GUILayout.Width(160));
+            GUILayout.TextField(data1.EditorStateNames[selectionIndex]);
             GUI.enabled = true;
             var color = GUI.color;
             if (data1.EditorSelectedName == data1.EditorStateNames[selectionIndex])
@@ -301,7 +301,7 @@ namespace StateController
         {
             GUI.enabled = false;
             var data2 = EditorData2;
-            GUILayout.TextField(data2.EditorStateNames[selectionIndex], GUILayout.Width(160));
+            GUILayout.TextField(data2.EditorStateNames[selectionIndex]);
             GUI.enabled = true;
             var color = GUI.color;
             if (data2.EditorSelectedName == data2.EditorStateNames[selectionIndex])
