@@ -9,7 +9,7 @@ namespace StateController
     {
         private Text m_Text;
         
-        protected internal override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
             m_Text = GetComponent<Text>();

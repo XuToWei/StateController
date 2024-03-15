@@ -18,7 +18,7 @@ namespace StateController
             }
         }
 
-        private List<StateControllerData> EditorControllerDatas => m_ControllerDatas;
+        public List<StateControllerData> EditorControllerDatas => m_ControllerDatas;
 
         private void OnValidate()
         {

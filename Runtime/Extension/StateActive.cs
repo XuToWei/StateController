@@ -7,7 +7,7 @@ namespace StateController
     {
         private GameObject m_GameObject;
         
-        protected internal override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
             m_GameObject = gameObject;

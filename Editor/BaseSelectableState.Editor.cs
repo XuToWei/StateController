@@ -46,6 +46,7 @@ namespace StateController
 
         internal override void EditorOnRefresh()
         {
+            base.EditorOnRefresh();
             var data = EditorData;
             if (data == null || string.IsNullOrEmpty(data.EditorSelectedName))
                 return;

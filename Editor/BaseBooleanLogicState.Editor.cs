@@ -87,6 +87,7 @@ namespace StateController
 
         internal override void EditorOnRefresh()
         {
+            base.EditorOnRefresh();
             if (EditorBooleanLogicType == BooleanLogicType.None)
             {
                 var data1 = EditorData1;

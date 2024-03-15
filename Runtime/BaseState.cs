@@ -11,7 +11,7 @@ namespace StateController
 
         internal abstract void OnRefresh();
 
-        protected internal virtual void OnInit()
+        protected virtual void OnInit()
         {
             
         }

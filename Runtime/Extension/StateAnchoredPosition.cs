@@ -8,7 +8,7 @@ namespace StateController
     {
         private RectTransform m_RectTransform;
 
-        protected internal override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
             m_RectTransform = GetComponent<RectTransform>();

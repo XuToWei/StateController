@@ -12,7 +12,7 @@ namespace StateController
         
         private Image m_Image;
 
-        protected internal override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
             m_Image = GetComponent<Image>();
