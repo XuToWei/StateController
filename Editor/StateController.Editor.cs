@@ -219,7 +219,7 @@ namespace StateController
         private void EditorRemoveSelectedData()
         {
             EditorControllerDatas.Remove(EditorSelectedData);
-            m_EditorNewDataName = string.Empty;
+            m_EditorSelectedDataName = string.Empty;
             EditorRefresh();
         }
 
