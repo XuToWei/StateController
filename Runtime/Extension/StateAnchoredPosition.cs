@@ -10,7 +10,6 @@ namespace StateController
 
         protected override void OnInit()
         {
-            base.OnInit();
             m_RectTransform = GetComponent<RectTransform>();
         }
 

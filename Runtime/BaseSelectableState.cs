@@ -19,7 +19,7 @@ namespace StateController
 
         internal override void OnInit(StateController controller)
         {
-            base.OnInit(controller);
+            OnInit();
             m_Data = controller.GetData(m_DataName);
             if (m_Data != null)
             {
@@ -42,5 +42,6 @@ namespace StateController
         }
 
         protected abstract void OnStateChanged(T stateData);
+        protected abstract void OnInit();
     }
 }

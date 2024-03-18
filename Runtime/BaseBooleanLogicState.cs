@@ -34,7 +34,7 @@ namespace StateController
 
         internal override void OnInit(StateController controller)
         {
-            base.OnInit(controller);
+            OnInit();
             m_Data1 = controller.GetData(m_DataName1);
             if (m_Data1 != null)
             {
@@ -94,5 +94,6 @@ namespace StateController
         }
 
         protected abstract void OnStateChanged(bool logicResult);
+        protected abstract void OnInit();
     }
 }

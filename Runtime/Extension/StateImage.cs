@@ -14,7 +14,6 @@ namespace StateController
 
         protected override void OnInit()
         {
-            base.OnInit();
             m_Image = GetComponent<Image>();
         }
 
