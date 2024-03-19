@@ -14,10 +14,10 @@ namespace StateController
         [PropertyOrder(10)]
         [ValueDropdown("EditorGetDataNames")]
         [OnValueChanged("EditorOnSelectedData")]
-        private string EditorDataName
+        internal string EditorDataName
         {
             get => m_DataName;
-            set => m_DataName = value;
+            private set => m_DataName = value;
         }
 
         [ShowInInspector]
@@ -28,12 +28,11 @@ namespace StateController
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = "EditorOnStateDataBeginGUI",
-            OnEndListElementGUI = "EditorOnStateDataEndGUI")]
+            OnBeginListElementGUI = "EditorOnStateDataBeginGUI")]
         [OnValueChanged("EditorRefreshSelectedName", true)]
-        private List<T> EditorStateDatas
+        internal List<T> EditorStateDatas
         {
-            set => m_StateDatas = value;
+            private set => m_StateDatas = value;
             get => m_StateDatas;
         }
 
@@ -46,7 +45,7 @@ namespace StateController
 
         internal override void EditorOnRefresh()
         {
-            OnInit();
+            OnStateInit();
             var data = EditorData;
             if (data == null || string.IsNullOrEmpty(data.EditorSelectedName))
                 return;
@@ -129,26 +128,27 @@ namespace StateController
         private void EditorOnStateDataBeginGUI(int selectionIndex)
         {
             GUILayout.BeginHorizontal();
-        }
-
-        private void EditorOnStateDataEndGUI(int selectionIndex)
-        {
             GUI.enabled = false;
             var data = EditorData;
-            GUILayout.TextField(data.EditorStateNames[selectionIndex], GUILayout.Width(160));
+            GUILayout.TextField(data.EditorStateNames[selectionIndex]);
             GUI.enabled = true;
             var color = GUI.color;
             if (data.EditorSelectedName == data.EditorStateNames[selectionIndex])
             {
                 GUI.color = new Color(0,1,0);
             }
-            if (GUILayout.Button("Apply", GUILayout.Width(80)))
+            if (GUILayout.Button("Apply"))
             {
                 EditorController.EditorRefresh();
                 data.EditorSelectedName = data.EditorStateNames[selectionIndex];
             }
             GUI.color = color;
             GUILayout.EndHorizontal();
+        }
+
+        private void EditorOnStateDataEndGUI(int selectionIndex)
+        {
+            
         }
     }
 }

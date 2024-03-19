@@ -3,7 +3,7 @@ namespace StateController
 {
     public partial class BaseState
     {
-        protected void OnValidate()
+        protected virtual void OnValidate()
         {
             EditorController.EditorRefresh();
         }

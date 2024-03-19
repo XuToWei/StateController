@@ -9,7 +9,7 @@ namespace StateController
     {
         private Text m_Text;
         
-        protected override void OnInit()
+        protected override void OnStateInit()
         {
             m_Text = GetComponent<Text>();
         }
