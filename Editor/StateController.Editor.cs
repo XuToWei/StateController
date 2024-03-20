@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 
 namespace StateController
@@ -112,7 +114,9 @@ namespace StateController
         {
             if(!EditorCheckCanAddStateName())
                 return;
-            EditorSelectedData.EditorStateNames.Add(m_EditorNewStateName);
+            var data = EditorSelectedData;
+            data.EditorStateNames.Add(m_EditorNewStateName);
+            data.EditorLinkDatas.Add(new LinkData());
             m_EditorNewStateName = string.Empty;
             EditorRefresh();
         }
@@ -124,6 +128,9 @@ namespace StateController
         [ShowInInspector]
         [ReadOnly]
         [EnableIf("EditorIsSelectedData")]
+        [InfoBox("$m_EditorLinkErrorMsg", 
+            InfoMessageType.Error,
+            "EditorCheckLinkError")]
         [ListDrawerSettings(DefaultExpandedState = true,
             OnBeginListElementGUI = "EditorOnStateNameBeginGUI",
             OnEndListElementGUI = "EditorOnStateNameEndGUI")]
@@ -341,34 +348,105 @@ namespace StateController
             GUILayout.BeginHorizontal();
         }
 
+        private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
+        private string m_EditorLinkErrorMsg = String.Empty;
         private void EditorOnStateNameEndGUI(int selectionIndex)
         {
             GUI.enabled = true;
             var color = GUI.color;
             var selectedData = EditorSelectedData;
-            if (selectedData.EditorSelectedName == selectedData.EditorStateNames[selectionIndex])
+            var curSateName = selectedData.EditorStateNames[selectionIndex];
+            if (selectedData.EditorSelectedName == curSateName)
             {
                 GUI.color = new Color(0,1,0);
             }
-            if (GUILayout.Button("Apply", GUILayout.Width(80)))
+            GUI.enabled = true;
+            if (GUILayout.Button("Apply"))
             {
                 EditorRefresh();
-                selectedData.EditorSelectedName = selectedData.EditorStateNames[selectionIndex];
+                selectedData.EditorSelectedName = curSateName;
             }
             GUI.color = color;
-            if (GUILayout.Button("X", GUILayout.Width(30)))
+            if (GUILayout.Button("X"))
             {
                 foreach (var state in EditorStates)
                 {
                     state.EditorOnDataRemoveState(m_EditorSelectedDataName, selectionIndex);
                 }
-                if (selectedData.EditorSelectedName == selectedData.EditorStateNames[selectionIndex])
+                if (selectedData.EditorSelectedName == curSateName)
                 {
                     selectedData.EditorSelectedName = string.Empty;
                 }
                 selectedData.EditorStateNames.RemoveAt(selectionIndex);
+                selectedData.EditorLinkDatas.RemoveAt(selectionIndex);
             }
+            // link
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Link");
+            var curLinkData = selectedData.EditorLinkDatas[selectionIndex];
+            var dataNames = EditorGetCanLinkDataNames(selectedData.EditorName);
+            int index = Array.IndexOf(dataNames, curLinkData.EditorTargetDataName);
+            index = EditorGUILayout.Popup(index, dataNames);
+            if(index != -1)
+            {
+                curLinkData.EditorTargetDataName = dataNames[index];
+                GUI.enabled = true;
+            }
+            else
+            {
+                GUI.enabled = false;
+            }
+            var curData = EditorGetData(curLinkData.EditorTargetDataName);
+            if (curData != null)
+            {
+                var stateNames = curData.EditorStateNames.ToArray();
+                index = Array.IndexOf(stateNames, curLinkData.EditorTargetSelectedName);
+                index = EditorGUILayout.Popup(index, stateNames);
+                if (index != -1)
+                {
+                    curLinkData.EditorTargetSelectedName = stateNames[index];
+                }
+            }
+            else
+            {
+                EditorGUILayout.Popup(-1, m_EditorEmptyStringArray);
+            }
+            GUI.enabled = !string.IsNullOrEmpty(curLinkData.EditorTargetDataName);
+            if (GUILayout.Button("Clear"))
+            {
+                curLinkData.EditorTargetDataName = string.Empty;
+                curLinkData.EditorTargetSelectedName = string.Empty;
+            }
+            GUI.enabled = true;
             GUILayout.EndHorizontal();
+        }
+
+        private bool EditorCheckLinkError()
+        {
+            return !string.IsNullOrEmpty(m_EditorLinkErrorMsg);
+        }
+
+        private string[] EditorGetCanLinkDataNames(string dataName)
+        {
+            var canLinkDataNames = EditorGetAllDataNames();
+            foreach (var data in EditorControllerDatas)
+            {
+                if(data.EditorName == dataName)
+                {
+                    canLinkDataNames.Remove(dataName);
+                }
+                else
+                {
+                    foreach (var linkData in data.EditorLinkDatas)
+                    {
+                        if (!string.IsNullOrEmpty(linkData.EditorTargetDataName))
+                        {
+                            canLinkDataNames.Remove(data.EditorName);
+                        }
+                    }
+                }
+            }
+            return canLinkDataNames.ToArray();
         }
     }
 }

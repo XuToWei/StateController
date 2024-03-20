@@ -5,6 +5,21 @@ using UnityEditor;
 
 namespace StateController
 {
+    internal partial class LinkData
+    {
+        public string EditorTargetDataName
+        {
+            set => m_TargetDataName = value;
+            get => m_TargetDataName;
+        }
+
+        public string EditorTargetSelectedName
+        {
+            set => m_TargetSelectedName = value;
+            get => m_TargetSelectedName;
+        }
+    }
+
     public partial class StateControllerData
     {
         private string m_EditorSelectedName;
@@ -25,6 +40,18 @@ namespace StateController
                 }
                 EditorApplication.QueuePlayerLoopUpdate();
             }
+        }
+        
+        internal List<LinkData> EditorLinkDatas => m_LinkDatas;
+
+        internal LinkData GetLinkData(string dataName)
+        {
+            foreach (var linkData in EditorLinkDatas)
+            {
+                if (linkData.TargetDataName == dataName)
+                    return linkData;
+            }
+            return null;
         }
         
         internal int EditorSelectedIndex => EditorStateNames.IndexOf(EditorSelectedName);

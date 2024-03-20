@@ -76,8 +76,23 @@ namespace StateController
             get => m_StateDatas2;
         }
 
-        private StateControllerData EditorData1 => EditorController.GetData(EditorDataName1);
-        private StateControllerData EditorData2 => EditorController.GetData(EditorDataName2);
+        private StateControllerData EditorData1
+        {
+            get
+            {
+                var controller = EditorController;
+                return controller == null ? null : controller.GetData(EditorDataName1);
+            }
+        }
+
+        private StateControllerData EditorData2
+        {
+            get
+            {
+                var controller = EditorController;
+                return controller == null ? null : controller.GetData(EditorDataName2);
+            }
+        }
 
         internal override void EditorRefresh()
         {
@@ -243,7 +258,10 @@ namespace StateController
 
         private void EditorOnSelectedData2()
         {
-            foreach (var dataName in EditorController.EditorGetAllDataNames())
+            var controller = EditorController;
+            if (controller == null)
+                return;
+            foreach (var dataName in controller.EditorGetAllDataNames())
             {
                 if (dataName != EditorDataName1 && dataName == EditorDataName2)
                 {
@@ -275,6 +293,12 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI1(int selectionIndex)
         {
+            var controller = EditorController;
+            if (controller == null)
+            {
+                GUILayout.EndHorizontal();
+                return;
+            }
             GUI.enabled = false;
             var data1 = EditorData1;
             GUILayout.TextField(data1.EditorStateNames[selectionIndex]);
@@ -284,9 +308,9 @@ namespace StateController
             {
                 GUI.color = new Color(0,1,0);
             }
-            if (GUILayout.Button("Apply", GUILayout.Width(80)))
+            if (GUILayout.Button("Apply"))
             {
-                EditorController.EditorRefresh();
+                controller.EditorRefresh();
                 data1.EditorSelectedName = data1.EditorStateNames[selectionIndex];
             }
             GUI.color = color;
@@ -300,6 +324,13 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI2(int selectionIndex)
         {
+            var controller = EditorController;
+            if (controller == null)
+            {
+                GUILayout.EndHorizontal();
+                return;
+            }
+            GUILayout.FlexibleSpace();
             GUI.enabled = false;
             var data2 = EditorData2;
             GUILayout.TextField(data2.EditorStateNames[selectionIndex]);
@@ -309,9 +340,9 @@ namespace StateController
             {
                 GUI.color = new Color(0,1,0);
             }
-            if (GUILayout.Button("Apply", GUILayout.Width(80)))
+            if (GUILayout.Button("Apply"))
             {
-                EditorController.EditorRefresh();
+                controller.EditorRefresh();
                 data2.EditorSelectedName = data2.EditorStateNames[selectionIndex];
             }
             GUI.color = color;

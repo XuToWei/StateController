@@ -5,7 +5,11 @@ namespace StateController
     {
         protected virtual void OnValidate()
         {
-            EditorController.EditorRefresh();
+            var controller = EditorController;
+            if (controller != null)
+            {
+                controller.EditorRefresh();
+            }
         }
 
         internal StateController EditorController => GetComponentInParent<StateController>(true);

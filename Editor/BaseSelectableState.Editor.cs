@@ -36,7 +36,14 @@ namespace StateController
             get => m_StateDatas;
         }
 
-        private StateControllerData EditorData => EditorController.EditorGetData(EditorDataName);
+        private StateControllerData EditorData
+        {
+            get
+            {
+                var controller = EditorController;
+                return controller == null ? null : controller.EditorGetData(EditorDataName);
+            }
+        }
 
         internal override void EditorRefresh()
         {
@@ -67,7 +74,7 @@ namespace StateController
                 EditorStateDatas.RemoveAt(index);
             }
         }
-        
+
         internal override bool EditorCheckIsConnection(StateControllerData data)
         {
             return EditorDataName == data.EditorName;
@@ -101,9 +108,15 @@ namespace StateController
             }
         }
 
+        private readonly List<string> m_EmptyListString = new List<string>();
         private List<string> EditorGetDataNames()
         {
-            return EditorController.EditorGetAllDataNames();
+            var controller = EditorController;
+            if (controller != null)
+            {
+                return controller.EditorGetAllDataNames();
+            }
+            return m_EmptyListString;
         }
 
         private bool EditorIsSelectedData()
@@ -111,7 +124,7 @@ namespace StateController
             return EditorData != null;
         }
 
-        private void EditorOnSelectedData()
+        protected virtual void EditorOnSelectedData()
         {
             EditorRefreshData();
         }
@@ -128,6 +141,17 @@ namespace StateController
         private void EditorOnStateDataBeginGUI(int selectionIndex)
         {
             GUILayout.BeginHorizontal();
+        }
+
+        private void EditorOnStateDataEndGUI(int selectionIndex)
+        {
+            var controller = EditorController;
+            if (controller == null)
+            {
+                GUILayout.EndHorizontal();
+                return;
+            }
+            GUILayout.FlexibleSpace();
             GUI.enabled = false;
             var data = EditorData;
             GUILayout.TextField(data.EditorStateNames[selectionIndex]);
@@ -139,16 +163,11 @@ namespace StateController
             }
             if (GUILayout.Button("Apply"))
             {
-                EditorController.EditorRefresh();
+                controller.EditorRefresh();
                 data.EditorSelectedName = data.EditorStateNames[selectionIndex];
             }
             GUI.color = color;
             GUILayout.EndHorizontal();
-        }
-
-        private void EditorOnStateDataEndGUI(int selectionIndex)
-        {
-            
         }
     }
 }
