@@ -207,6 +207,12 @@ namespace StateController
                     return;
                 }
             }
+            foreach (var data in EditorControllerDatas)
+            {
+                if(data == selectedData)
+                    continue;
+                data.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);
+            }
             foreach (var state in EditorStates)
             {
                 state.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);

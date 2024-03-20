@@ -72,6 +72,17 @@ namespace StateController
             }
             EditorApplication.QueuePlayerLoopUpdate();
         }
+
+        internal void EditorOnDataRename(string oldDataName, string newDataName)
+        {
+            foreach (var linkData in EditorLinkDatas)
+            {
+                if (linkData.EditorTargetDataName == oldDataName)
+                {
+                    linkData.EditorTargetDataName = newDataName;
+                }
+            }
+        }
     }
 }
 #endif
