@@ -14,10 +14,10 @@ namespace StateController
         [PropertyOrder(10)]
         [ValueDropdown("EditorGetDataNames")]
         [OnValueChanged("EditorOnSelectedData")]
-        internal string EditorDataName
+        private string EditorDataName
         {
             get => m_DataName;
-            private set => m_DataName = value;
+            set => m_DataName = value;
         }
 
         [ShowInInspector]
@@ -31,9 +31,9 @@ namespace StateController
             OnBeginListElementGUI = "EditorOnStateDataBeginGUI",
             OnEndListElementGUI = "EditorOnStateDataEndGUI")]
         [OnValueChanged("EditorRefreshSelectedName", true)]
-        internal List<T> EditorStateDatas
+        private List<T> EditorStateDatas
         {
-            private set => m_StateDatas = value;
+            set => m_StateDatas = value;
             get => m_StateDatas;
         }
 
