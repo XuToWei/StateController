@@ -35,11 +35,11 @@ namespace StateController
             get => m_SelectedName;
             set
             {
-                int index = m_StateNames.IndexOf(m_SelectedName);
-                if (index < 0)
-                    throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 if(m_SelectedName == value)
                     return;
+                int index = m_StateNames.IndexOf(value);
+                if (index < 0)
+                    throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 m_SelectedName = value;
                 foreach (var state in m_Controller.States)
                 {

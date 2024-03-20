@@ -28,7 +28,8 @@ namespace StateController
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = "EditorOnStateDataBeginGUI")]
+            OnBeginListElementGUI = "EditorOnStateDataBeginGUI",
+            OnEndListElementGUI = "EditorOnStateDataEndGUI")]
         [OnValueChanged("EditorRefreshSelectedName", true)]
         internal List<T> EditorStateDatas
         {
@@ -124,12 +125,12 @@ namespace StateController
             return EditorData != null;
         }
 
-        protected virtual void EditorOnSelectedData()
+        private void EditorOnSelectedData()
         {
             EditorRefreshData();
         }
         
-        internal void EditorRefreshSelectedName()
+        private void EditorRefreshSelectedName()
         {
             var data = EditorData;
             if (data != null)
@@ -151,20 +152,20 @@ namespace StateController
                 GUILayout.EndHorizontal();
                 return;
             }
-            GUILayout.FlexibleSpace();
             GUI.enabled = false;
             var data = EditorData;
-            GUILayout.TextField(data.EditorStateNames[selectionIndex]);
+            var curStateName = data.EditorStateNames[selectionIndex];
+            GUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
-            if (data.EditorSelectedName == data.EditorStateNames[selectionIndex])
+            if (data.EditorSelectedName == curStateName)
             {
                 GUI.color = new Color(0,1,0);
             }
             if (GUILayout.Button("Apply"))
             {
                 controller.EditorRefresh();
-                data.EditorSelectedName = data.EditorStateNames[selectionIndex];
+                data.EditorSelectedName = curStateName;
             }
             GUI.color = color;
             GUILayout.EndHorizontal();

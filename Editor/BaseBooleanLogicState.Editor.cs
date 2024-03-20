@@ -301,17 +301,18 @@ namespace StateController
             }
             GUI.enabled = false;
             var data1 = EditorData1;
-            GUILayout.TextField(data1.EditorStateNames[selectionIndex]);
+            var curStateName = data1.EditorStateNames[selectionIndex];
+            GUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
-            if (data1.EditorSelectedName == data1.EditorStateNames[selectionIndex])
+            if (data1.EditorSelectedName == curStateName)
             {
                 GUI.color = new Color(0,1,0);
             }
             if (GUILayout.Button("Apply"))
             {
                 controller.EditorRefresh();
-                data1.EditorSelectedName = data1.EditorStateNames[selectionIndex];
+                data1.EditorSelectedName = curStateName;
             }
             GUI.color = color;
             GUILayout.EndHorizontal();
@@ -330,20 +331,20 @@ namespace StateController
                 GUILayout.EndHorizontal();
                 return;
             }
-            GUILayout.FlexibleSpace();
             GUI.enabled = false;
             var data2 = EditorData2;
-            GUILayout.TextField(data2.EditorStateNames[selectionIndex]);
+            var curStateName = data2.EditorStateNames[selectionIndex];
+            GUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
-            if (data2.EditorSelectedName == data2.EditorStateNames[selectionIndex])
+            if (data2.EditorSelectedName == curStateName)
             {
                 GUI.color = new Color(0,1,0);
             }
             if (GUILayout.Button("Apply"))
             {
                 controller.EditorRefresh();
-                data2.EditorSelectedName = data2.EditorStateNames[selectionIndex];
+                data2.EditorSelectedName = curStateName;
             }
             GUI.color = color;
             GUILayout.EndHorizontal();

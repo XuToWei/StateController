@@ -128,9 +128,6 @@ namespace StateController
         [ShowInInspector]
         [ReadOnly]
         [EnableIf("EditorIsSelectedData")]
-        [InfoBox("$m_EditorLinkErrorMsg", 
-            InfoMessageType.Error,
-            "EditorCheckLinkError")]
         [ListDrawerSettings(DefaultExpandedState = true,
             OnBeginListElementGUI = "EditorOnStateNameBeginGUI",
             OnEndListElementGUI = "EditorOnStateNameEndGUI")]
@@ -349,7 +346,6 @@ namespace StateController
         }
 
         private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
-        private string m_EditorLinkErrorMsg = String.Empty;
         private void EditorOnStateNameEndGUI(int selectionIndex)
         {
             GUI.enabled = true;
@@ -419,11 +415,6 @@ namespace StateController
             }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
-        }
-
-        private bool EditorCheckLinkError()
-        {
-            return !string.IsNullOrEmpty(m_EditorLinkErrorMsg);
         }
 
         private string[] EditorGetCanLinkDataNames(string dataName)

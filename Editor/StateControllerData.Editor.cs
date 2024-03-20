@@ -31,28 +31,25 @@ namespace StateController
             get => m_EditorSelectedName;
             set
             {
-                if (!EditorStateNames.Contains(value))
+                int index = m_StateNames.IndexOf(value);
+                if (index < 0)
                     throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 m_EditorSelectedName = value;
                 foreach (var state in m_EditorController.EditorStates)
                 {
                     state.EditorOnRefresh();
                 }
+                var linkData = EditorLinkDatas[index];
+                var data = m_EditorController.GetData(linkData.EditorTargetDataName);
+                if (data != null && !string.IsNullOrEmpty(linkData.EditorTargetSelectedName))
+                {
+                    data.EditorSelectedName = linkData.EditorTargetSelectedName;
+                }
                 EditorApplication.QueuePlayerLoopUpdate();
             }
         }
         
         internal List<LinkData> EditorLinkDatas => m_LinkDatas;
-
-        internal LinkData GetLinkData(string dataName)
-        {
-            foreach (var linkData in EditorLinkDatas)
-            {
-                if (linkData.TargetDataName == dataName)
-                    return linkData;
-            }
-            return null;
-        }
         
         internal int EditorSelectedIndex => EditorStateNames.IndexOf(EditorSelectedName);
 
