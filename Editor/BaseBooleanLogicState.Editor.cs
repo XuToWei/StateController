@@ -102,7 +102,7 @@ namespace StateController
 
         internal override void EditorOnRefresh()
         {
-            OnInit();
+            OnStateInit();
             if (EditorBooleanLogicType == BooleanLogicType.None)
             {
                 var data1 = EditorData1;

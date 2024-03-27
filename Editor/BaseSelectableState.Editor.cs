@@ -8,6 +8,28 @@ namespace StateController
 {
     public partial class BaseSelectableState<T>
     {
+        private SelectableStateDrawSettingAttribute DrawSettingAttribute
+        {
+            get
+            {
+                var objects = GetType().GetCustomAttributes(typeof(SelectableStateDrawSettingAttribute), true);
+                if (objects.Length > 0)
+                {
+                    return (SelectableStateDrawSettingAttribute)objects[0];
+                }
+                return null;
+            }
+        }
+
+        private bool DrawSettingLineBreak
+        {
+            get
+            {
+                var drawSetting = DrawSettingAttribute;
+                return drawSetting != null && drawSetting.LineBreak;
+            }
+        }
+        
         [ShowInInspector]
         [BoxGroup("Data")]
         [LabelText("Data Name")]
@@ -20,6 +42,7 @@ namespace StateController
             set => m_DataName = value;
         }
 
+        [HideReferenceObjectPicker]
         [ShowInInspector]
         [BoxGroup("Data")]
         [LabelText("State Datas")]
@@ -142,9 +165,21 @@ namespace StateController
         private void EditorOnStateDataBeginGUI(int selectionIndex)
         {
             GUILayout.BeginHorizontal();
+            if (DrawSettingLineBreak)
+            {
+                EditorOnStateDataTitleGUI(selectionIndex);
+            }
         }
 
         private void EditorOnStateDataEndGUI(int selectionIndex)
+        {
+            if (!DrawSettingLineBreak)
+            {
+                EditorOnStateDataTitleGUI(selectionIndex);
+            }
+        }
+
+        private void EditorOnStateDataTitleGUI(int selectionIndex)
         {
             var controller = EditorController;
             if (controller == null)

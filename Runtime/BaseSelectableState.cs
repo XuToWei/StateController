@@ -41,7 +41,7 @@ namespace StateController
             OnStateChanged(m_StateDataDict[m_Data.SelectedName]);
         }
 
-        protected abstract void OnStateChanged(T stateData);
         protected abstract void OnStateInit();
+        protected abstract void OnStateChanged(T stateData);
     }
 }

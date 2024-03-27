@@ -354,9 +354,14 @@ namespace StateController
         private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
         private void EditorOnStateNameEndGUI(int selectionIndex)
         {
+            var selectedData = EditorSelectedData;
+            if (selectionIndex >= selectedData.EditorStateNames.Count)
+            {
+                GUILayout.EndHorizontal();
+                return;
+            }
             GUI.enabled = true;
             var color = GUI.color;
-            var selectedData = EditorSelectedData;
             var curSateName = selectedData.EditorStateNames[selectionIndex];
             if (selectedData.EditorSelectedName == curSateName)
             {
@@ -381,9 +386,10 @@ namespace StateController
                 }
                 selectedData.EditorStateNames.RemoveAt(selectionIndex);
                 selectedData.EditorLinkDatas.RemoveAt(selectionIndex);
+                GUILayout.EndHorizontal();
+                return;
             }
             // link
-            GUILayout.FlexibleSpace();
             GUILayout.Label("Link");
             var curLinkData = selectedData.EditorLinkDatas[selectionIndex];
             var dataNames = EditorGetCanLinkDataNames(selectedData.EditorName);
