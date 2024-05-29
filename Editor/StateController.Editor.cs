@@ -370,12 +370,14 @@ namespace StateController
             GUI.enabled = true;
             if (GUILayout.Button("Apply"))
             {
+                Undo.RegisterCompleteObjectUndo(this, "Apply State");
                 EditorRefresh();
                 selectedData.EditorSelectedName = curSateName;
             }
             GUI.color = color;
             if (GUILayout.Button("X"))
             {
+                Undo.RegisterCompleteObjectUndo(this, "Remove State");
                 foreach (var state in EditorStates)
                 {
                     state.EditorOnDataRemoveState(m_EditorSelectedDataName, selectionIndex);
@@ -397,6 +399,10 @@ namespace StateController
             index = EditorGUILayout.Popup(index, dataNames);
             if(index != -1)
             {
+                if (curLinkData.EditorTargetDataName != dataNames[index])
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Data Link");
+                }
                 curLinkData.EditorTargetDataName = dataNames[index];
                 GUI.enabled = true;
             }
@@ -412,6 +418,10 @@ namespace StateController
                 index = EditorGUILayout.Popup(index, stateNames);
                 if (index != -1)
                 {
+                    if (curLinkData.EditorTargetSelectedName != stateNames[index])
+                    {
+                        Undo.RegisterCompleteObjectUndo(this, "State Link");
+                    }
                     curLinkData.EditorTargetSelectedName = stateNames[index];
                 }
             }
@@ -422,6 +432,7 @@ namespace StateController
             GUI.enabled = !string.IsNullOrEmpty(curLinkData.EditorTargetDataName);
             if (GUILayout.Button("Clear"))
             {
+                Undo.RegisterCompleteObjectUndo(this, "Clear Link");
                 curLinkData.EditorTargetDataName = string.Empty;
                 curLinkData.EditorTargetSelectedName = string.Empty;
             }
