@@ -90,6 +90,7 @@ namespace StateController
         [PropertyOrder(20)]
         [ShowInInspector]
         [ValueDropdown("EditorGetAllDataNames")]
+        [OnValueChanged("EditorOnSelectedDataChanged", InvokeOnInitialize = true)]
         [SerializeField]
         private string m_EditorSelectedDataName = string.Empty;
 
@@ -352,6 +353,8 @@ namespace StateController
         }
 
         private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
+        private readonly List<bool> m_EditorSelectedStatesRenameButtons = new List<bool>();
+        private readonly List<string> m_EditorSelectedStatesRenameNames = new List<string>();
         private void EditorOnStateNameEndGUI(int selectionIndex)
         {
             var selectedData = EditorSelectedData;
@@ -368,75 +371,118 @@ namespace StateController
                 GUI.color = new Color(0,1,0);
             }
             GUI.enabled = true;
-            if (GUILayout.Button("Apply"))
+            bool isRename = m_EditorSelectedStatesRenameButtons[selectionIndex];
+            if (!isRename && GUILayout.Button("Apply"))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Apply State");
                 EditorRefresh();
                 selectedData.EditorSelectedName = curSateName;
             }
-            GUI.color = color;
-            if (GUILayout.Button("X"))
+            if (isRename)
             {
-                Undo.RegisterCompleteObjectUndo(this, "Remove State");
-                foreach (var state in EditorStates)
-                {
-                    state.EditorOnDataRemoveState(m_EditorSelectedDataName, selectionIndex);
-                }
-                if (selectedData.EditorSelectedName == curSateName)
-                {
-                    selectedData.EditorSelectedName = string.Empty;
-                }
-                selectedData.EditorStateNames.RemoveAt(selectionIndex);
-                selectedData.EditorLinkDatas.RemoveAt(selectionIndex);
-                GUILayout.EndHorizontal();
-                return;
+                GUI.color = new Color(0,1,0);
             }
-            // link
-            GUILayout.Label("Link");
-            var curLinkData = selectedData.EditorLinkDatas[selectionIndex];
-            var dataNames = EditorGetCanLinkDataNames(selectedData.EditorName);
-            int index = Array.IndexOf(dataNames, curLinkData.EditorTargetDataName);
-            index = EditorGUILayout.Popup(index, dataNames);
-            if(index != -1)
+            else
             {
-                if (curLinkData.EditorTargetDataName != dataNames[index])
+                GUI.color = color;
+            }
+            if (GUILayout.Button("Rename"))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Rename State Button");
+                isRename = !isRename;
+                m_EditorSelectedStatesRenameButtons[selectionIndex] = isRename;
+                if (isRename)
                 {
-                    Undo.RegisterCompleteObjectUndo(this, "Data Link");
+                    m_EditorSelectedStatesRenameNames[selectionIndex] = selectedData.EditorStateNames[selectionIndex];
                 }
-                curLinkData.EditorTargetDataName = dataNames[index];
+            }
+            GUI.color = color;
+            GUI.enabled = true;
+            if (isRename)
+            {
+                string curStateName = m_EditorSelectedStatesRenameNames[selectionIndex];
+                m_EditorSelectedStatesRenameNames[selectionIndex] = GUILayout.TextField(curStateName);
+                GUI.enabled = curSateName != m_EditorSelectedStatesRenameNames[selectionIndex];
+                if (GUILayout.Button("Change Name"))
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Change State Name");
+                    string newStateName = m_EditorSelectedStatesRenameNames[selectionIndex];
+                    string oldStateName = selectedData.EditorStateNames[selectionIndex];
+                    selectedData.EditorStateNames[selectionIndex] = newStateName;
+                    foreach (var data in EditorControllerDatas)
+                    {
+                        data.EditorOnStateRename(selectedData.EditorName, oldStateName, newStateName);
+                    }
+                }
                 GUI.enabled = true;
             }
             else
             {
-                GUI.enabled = false;
-            }
-            var curData = EditorGetData(curLinkData.EditorTargetDataName);
-            if (curData != null)
-            {
-                var stateNames = curData.EditorStateNames.ToArray();
-                index = Array.IndexOf(stateNames, curLinkData.EditorTargetSelectedName);
-                index = EditorGUILayout.Popup(index, stateNames);
+                if (GUILayout.Button("X"))
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Remove State");
+                    foreach (var state in EditorStates)
+                    {
+                        state.EditorOnDataRemoveState(m_EditorSelectedDataName, selectionIndex);
+                    }
+                    if (selectedData.EditorSelectedName == curSateName)
+                    {
+                        selectedData.EditorClearSelectedName();
+                    }
+                    selectedData.EditorStateNames.RemoveAt(selectionIndex);
+                    selectedData.EditorLinkDatas.RemoveAt(selectionIndex);
+                    m_EditorSelectedStatesRenameButtons.RemoveAt(selectionIndex);
+                    m_EditorSelectedStatesRenameNames.RemoveAt(selectionIndex);
+                    GUILayout.EndHorizontal();
+                    return;
+                }
+                // link
+                GUILayout.Label("Link");
+                var curLinkData = selectedData.EditorLinkDatas[selectionIndex];
+                var dataNames = EditorGetCanLinkDataNames(selectedData.EditorName);
+                int index = Array.IndexOf(dataNames, curLinkData.EditorTargetDataName);
+                index = EditorGUILayout.Popup(index, dataNames);
                 if (index != -1)
                 {
-                    if (curLinkData.EditorTargetSelectedName != stateNames[index])
+                    if (curLinkData.EditorTargetDataName != dataNames[index])
                     {
-                        Undo.RegisterCompleteObjectUndo(this, "State Link");
+                        Undo.RegisterCompleteObjectUndo(this, "Data Link");
                     }
-                    curLinkData.EditorTargetSelectedName = stateNames[index];
+                    curLinkData.EditorTargetDataName = dataNames[index];
+                    GUI.enabled = true;
                 }
+                else
+                {
+                    GUI.enabled = false;
+                }
+                var curData = EditorGetData(curLinkData.EditorTargetDataName);
+                if (curData != null)
+                {
+                    var stateNames = curData.EditorStateNames.ToArray();
+                    index = Array.IndexOf(stateNames, curLinkData.EditorTargetSelectedName);
+                    index = EditorGUILayout.Popup(index, stateNames);
+                    if (index != -1)
+                    {
+                        if (curLinkData.EditorTargetSelectedName != stateNames[index])
+                        {
+                            Undo.RegisterCompleteObjectUndo(this, "State Link");
+                        }
+                        curLinkData.EditorTargetSelectedName = stateNames[index];
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.Popup(-1, m_EditorEmptyStringArray);
+                }
+                GUI.enabled = !string.IsNullOrEmpty(curLinkData.EditorTargetDataName);
+                if (GUILayout.Button("Clear"))
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Clear Link");
+                    curLinkData.EditorTargetDataName = string.Empty;
+                    curLinkData.EditorTargetSelectedName = string.Empty;
+                }
+                GUI.enabled = true;
             }
-            else
-            {
-                EditorGUILayout.Popup(-1, m_EditorEmptyStringArray);
-            }
-            GUI.enabled = !string.IsNullOrEmpty(curLinkData.EditorTargetDataName);
-            if (GUILayout.Button("Clear"))
-            {
-                Undo.RegisterCompleteObjectUndo(this, "Clear Link");
-                curLinkData.EditorTargetDataName = string.Empty;
-                curLinkData.EditorTargetSelectedName = string.Empty;
-            }
-            GUI.enabled = true;
             GUILayout.EndHorizontal();
         }
 
@@ -461,6 +507,18 @@ namespace StateController
                 }
             }
             return canLinkDataNames.ToArray();
+        }
+
+        private void EditorOnSelectedDataChanged()
+        {
+            m_EditorSelectedStatesRenameButtons.Clear();
+            m_EditorSelectedStatesRenameNames.Clear();
+            var stateNames = EditorSelectedData.EditorStateNames;
+            for (int i = 0; i < stateNames.Count; i++)
+            {
+                m_EditorSelectedStatesRenameButtons.Add(false);
+                m_EditorSelectedStatesRenameNames.Add(stateNames[i]);
+            }
         }
     }
 }

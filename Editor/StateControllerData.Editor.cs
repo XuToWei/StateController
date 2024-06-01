@@ -48,7 +48,12 @@ namespace StateController
                 EditorApplication.QueuePlayerLoopUpdate();
             }
         }
-        
+
+        internal void EditorClearSelectedName()
+        {
+            m_EditorSelectedName = string.Empty;
+        }
+
         internal List<LinkData> EditorLinkDatas => m_LinkDatas;
         
         internal int EditorSelectedIndex => EditorStateNames.IndexOf(EditorSelectedName);
@@ -80,6 +85,17 @@ namespace StateController
                 if (linkData.EditorTargetDataName == oldDataName)
                 {
                     linkData.EditorTargetDataName = newDataName;
+                }
+            }
+        }
+
+        internal void EditorOnStateRename(string dataName, string oldStateName, string newStateName)
+        {
+            foreach (var linkData in EditorLinkDatas)
+            {
+                if (linkData.EditorTargetDataName == dataName && linkData.EditorTargetSelectedName == oldStateName)
+                {
+                    linkData.EditorTargetSelectedName = newStateName;
                 }
             }
         }
