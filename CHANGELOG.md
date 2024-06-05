@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.4] - 2024-6-5
+- 添加State改名功能
+
 ## [1.0.3] - 2024-3-27
 - 添加SelectableState换行显示的DrawSetting
 - 添加StateImageColor
