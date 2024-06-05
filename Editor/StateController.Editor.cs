@@ -32,8 +32,7 @@ namespace StateController
         {
             if (m_EditorLastRefreshFrame == Time.frameCount)
                 return;
-            var selectedData = EditorSelectedData;
-            if (selectedData == null)
+            if (EditorSelectedData == null)
                 return;
             m_EditorLastRefreshFrame = Time.frameCount;
             foreach (var data in EditorControllerDatas)
@@ -47,14 +46,6 @@ namespace StateController
             foreach (var data in EditorControllerDatas)
             {
                 data.EditorRefreshSelectedName();
-            }
-            m_EditorSelectedStatesRenameButtons.Clear();
-            m_EditorSelectedStatesRenameNames.Clear();
-            var stateNames = selectedData.EditorStateNames;
-            for (int i = 0; i < stateNames.Count; i++)
-            {
-                m_EditorSelectedStatesRenameButtons.Add(false);
-                m_EditorSelectedStatesRenameNames.Add(stateNames[i]);
             }
         }
 
@@ -101,6 +92,7 @@ namespace StateController
         [PropertyOrder(20)]
         [ShowInInspector]
         [ValueDropdown("EditorGetAllDataNames")]
+        [OnValueChanged("EditorRefreshSelectedStatesRenameDatas", InvokeOnInitialize = true)]
         [SerializeField]
         private string m_EditorSelectedDataName = string.Empty;
 
@@ -129,6 +121,8 @@ namespace StateController
                 return;
             var data = EditorSelectedData;
             data.EditorStateNames.Add(m_EditorNewStateName);
+            m_EditorSelectedStatesRenameButtons.Add(false);
+            m_EditorSelectedStatesRenameNames.Add(m_EditorNewStateName);
             data.EditorLinkDatas.Add(new LinkData());
             m_EditorNewStateName = string.Empty;
             EditorRefresh();
@@ -524,6 +518,21 @@ namespace StateController
                 }
             }
             return canLinkDataNames.ToArray();
+        }
+
+        private void EditorRefreshSelectedStatesRenameDatas()
+        {
+            m_EditorSelectedStatesRenameButtons.Clear();
+            m_EditorSelectedStatesRenameNames.Clear();
+            var selectedData = EditorSelectedData;
+            if(selectedData == null)
+                return;
+            var stateNames = selectedData.EditorStateNames;
+            for (int i = 0; i < stateNames.Count; i++)
+            {
+                m_EditorSelectedStatesRenameButtons.Add(false);
+                m_EditorSelectedStatesRenameNames.Add(stateNames[i]);
+            }
         }
     }
 }
