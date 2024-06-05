@@ -399,11 +399,13 @@ namespace StateController
                         data.EditorOnStateRename(selectedData.EditorName, oldStateName, newStateName);
                     }
                     m_EditorSelectedStatesRenameButtons[selectionIndex] = false;
+                    EditorGUI.FocusTextInControl(null);
                 }
                 GUI.enabled = true;
                 if (GUILayout.Button("Cancel"))
                 {
                     m_EditorSelectedStatesRenameButtons[selectionIndex] = false;
+                    EditorGUI.FocusTextInControl(null);
                 }
             }
             else
