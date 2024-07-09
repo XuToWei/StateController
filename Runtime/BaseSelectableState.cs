@@ -17,10 +17,10 @@ namespace StateController
         private Dictionary<string, T> m_StateDataDict = new Dictionary<string, T>();
         private StateControllerData m_Data;
 
-        internal override void OnInit(StateController controller)
+        internal override void OnInit(StateControllerMono controllerMono)
         {
             OnStateInit();
-            m_Data = controller.GetData(m_DataName);
+            m_Data = controllerMono.GetData(m_DataName);
             if (m_Data != null)
             {
                 m_StateDataDict.Clear();

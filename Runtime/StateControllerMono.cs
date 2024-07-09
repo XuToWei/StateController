@@ -4,7 +4,7 @@ using UnityEngine;
 namespace StateController
 {
     [DisallowMultipleComponent]
-    public sealed partial class StateController : MonoBehaviour
+    public sealed partial class StateControllerMono : MonoBehaviour
     {
         [HideInInspector]
         [SerializeField]

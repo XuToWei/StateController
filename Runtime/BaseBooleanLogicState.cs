@@ -32,10 +32,10 @@ namespace StateController
         private StateControllerData m_Data1;
         private StateControllerData m_Data2;
 
-        internal override void OnInit(StateController controller)
+        internal override void OnInit(StateControllerMono controllerMono)
         {
             OnStateInit();
-            m_Data1 = controller.GetData(m_DataName1);
+            m_Data1 = controllerMono.GetData(m_DataName1);
             if (m_Data1 != null)
             {
                 m_StateDataDict1.Clear();
@@ -46,7 +46,7 @@ namespace StateController
             }
             if (m_BooleanLogicType != BooleanLogicType.None)
             {
-                m_Data2 = controller.GetData(m_DataName2);
+                m_Data2 = controllerMono.GetData(m_DataName2);
                 if (m_Data2 != null)
                 {
                     m_StateDataDict2.Clear();

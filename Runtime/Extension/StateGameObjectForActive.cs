@@ -3,7 +3,7 @@ using UnityEngine;
 namespace StateController
 {
     [DisallowMultipleComponent]
-    public class StateActive : BaseBooleanLogicState
+    public class StateGameObjectForActive : BaseBooleanLogicState
     {
         private GameObject m_GameObject;
         

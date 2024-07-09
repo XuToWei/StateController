@@ -5,14 +5,14 @@ namespace StateController
     {
         protected virtual void OnValidate()
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller != null)
             {
                 controller.EditorRefresh();
             }
         }
 
-        internal StateController EditorController => GetComponentInParent<StateController>(true);
+        internal StateControllerMono EditorControllerMono => GetComponentInParent<StateControllerMono>(true);
         internal abstract void EditorRefresh();
         internal abstract void EditorOnRefresh();
         internal abstract void EditorOnDataRename(string oldDataName, string newDataName);

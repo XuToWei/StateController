@@ -64,7 +64,7 @@ namespace StateController
         {
             get
             {
-                var controller = EditorController;
+                var controller = EditorControllerMono;
                 return controller == null ? null : controller.EditorGetData(EditorDataName);
             }
         }
@@ -135,7 +135,7 @@ namespace StateController
         private readonly List<string> m_EmptyListString = new List<string>();
         private List<string> EditorGetDataNames()
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller != null)
             {
                 return controller.EditorGetAllDataNames();
@@ -181,7 +181,7 @@ namespace StateController
 
         private void EditorOnStateDataTitleGUI(int selectionIndex)
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
             {
                 GUILayout.EndHorizontal();

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace StateController
 {
-    public partial class StateController
+    public partial class StateControllerMono
     {
         private readonly List<BaseState> m_EditorStates = new List<BaseState>();
         internal List<BaseState> EditorStates

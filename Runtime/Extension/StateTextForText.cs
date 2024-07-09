@@ -5,7 +5,7 @@ namespace StateController
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Text))]
-    public class StateText : BaseSelectableState<string>
+    public class StateTextForText : BaseSelectableState<string>
     {
         private Text m_Text;
         

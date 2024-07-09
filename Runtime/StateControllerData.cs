@@ -26,7 +26,7 @@ namespace StateController
         private List<LinkData> m_LinkDatas = new List<LinkData>();
 
         private string m_SelectedName;
-        private StateController m_Controller;
+        private StateControllerMono m_ControllerMono;
         public string Name => m_Name;
         public List<string> StateNames => m_StateNames;
 
@@ -41,12 +41,12 @@ namespace StateController
                 if (index < 0)
                     throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 m_SelectedName = value;
-                foreach (var state in m_Controller.States)
+                foreach (var state in m_ControllerMono.States)
                 {
                     state.OnRefresh();
                 }
                 var linkData = m_LinkDatas[index];
-                var data = m_Controller.GetData(linkData.TargetDataName);
+                var data = m_ControllerMono.GetData(linkData.TargetDataName);
                 if (data != null && !string.IsNullOrEmpty(linkData.TargetSelectedName))
                 {
                     data.SelectedName = linkData.TargetSelectedName;
@@ -54,9 +54,9 @@ namespace StateController
             }
         }
 
-        internal void OnInit(StateController controller)
+        internal void OnInit(StateControllerMono controllerMono)
         {
-            m_Controller = controller;
+            m_ControllerMono = controllerMono;
         }
     }
 }

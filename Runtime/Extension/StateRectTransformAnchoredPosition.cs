@@ -4,7 +4,7 @@ namespace StateController
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
-    public class StateAnchoredPosition : BaseSelectableState<Vector2>
+    public class StateRectTransformAnchoredPosition : BaseSelectableState<Vector2>
     {
         private RectTransform m_RectTransform;
 

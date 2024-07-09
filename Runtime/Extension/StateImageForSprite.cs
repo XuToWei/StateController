@@ -5,7 +5,7 @@ namespace StateController
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Image))]
-    public class StateImage : BaseSelectableState<Sprite>
+    public class StateImageForSprite : BaseSelectableState<Sprite>
     {
         [SerializeField]
         private bool m_SetNativeSize;

@@ -80,7 +80,7 @@ namespace StateController
         {
             get
             {
-                var controller = EditorController;
+                var controller = EditorControllerMono;
                 return controller == null ? null : controller.GetData(EditorDataName1);
             }
         }
@@ -89,7 +89,7 @@ namespace StateController
         {
             get
             {
-                var controller = EditorController;
+                var controller = EditorControllerMono;
                 return controller == null ? null : controller.GetData(EditorDataName2);
             }
         }
@@ -167,14 +167,14 @@ namespace StateController
 
         private bool EditorIsSelectedData1()
         {
-            if (EditorController == null)
+            if (EditorControllerMono == null)
                 return false;
             return EditorData1 != null;
         }
 
         private bool EditorIsSelectedData2()
         {
-            if (EditorController == null)
+            if (EditorControllerMono == null)
                 return false;
             return EditorData2 != null && EditorBooleanLogicType != BooleanLogicType.None;
         }
@@ -187,7 +187,7 @@ namespace StateController
         private readonly List<string> m_EditorEmptyListString = new List<string>();
         private List<string> EditorGetDataNames1()
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
                 return m_EditorEmptyListString;
             return controller.EditorGetAllDataNames();
@@ -195,7 +195,7 @@ namespace StateController
         
         private List<string> EditorGetDataNames2()
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
                 return m_EditorEmptyListString;
             var names = controller.EditorGetAllDataNames();
@@ -258,7 +258,7 @@ namespace StateController
 
         private void EditorOnSelectedData2()
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
                 return;
             foreach (var dataName in controller.EditorGetAllDataNames())
@@ -293,7 +293,7 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI1(int selectionIndex)
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
             {
                 GUILayout.EndHorizontal();
@@ -325,7 +325,7 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI2(int selectionIndex)
         {
-            var controller = EditorController;
+            var controller = EditorControllerMono;
             if (controller == null)
             {
                 GUILayout.EndHorizontal();

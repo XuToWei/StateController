@@ -23,7 +23,7 @@ namespace StateController
     public partial class StateControllerData
     {
         private string m_EditorSelectedName;
-        private StateController m_EditorController;
+        private StateControllerMono m_EditorControllerMono;
         internal List<string> EditorStateNames => m_StateNames;
 
         internal string EditorSelectedName
@@ -35,12 +35,12 @@ namespace StateController
                 if (index < 0)
                     throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 m_EditorSelectedName = value;
-                foreach (var state in m_EditorController.EditorStates)
+                foreach (var state in m_EditorControllerMono.EditorStates)
                 {
                     state.EditorOnRefresh();
                 }
                 var linkData = EditorLinkDatas[index];
-                var data = m_EditorController.GetData(linkData.EditorTargetDataName);
+                var data = m_EditorControllerMono.GetData(linkData.EditorTargetDataName);
                 if (data != null && !string.IsNullOrEmpty(linkData.EditorTargetSelectedName))
                 {
                     data.EditorSelectedName = linkData.EditorTargetSelectedName;
@@ -64,14 +64,14 @@ namespace StateController
             set => m_Name = value;
         }
 
-        internal void EditorRefresh(StateController controller)
+        internal void EditorRefresh(StateControllerMono controllerMono)
         {
-            m_EditorController = controller;
+            m_EditorControllerMono = controllerMono;
         }
 
         internal void EditorRefreshSelectedName()
         {
-            foreach (var state in m_EditorController.EditorStates)
+            foreach (var state in m_EditorControllerMono.EditorStates)
             {
                 state.EditorOnRefresh();
             }
