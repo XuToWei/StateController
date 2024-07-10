@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 
 namespace StateController
@@ -190,7 +191,7 @@ namespace StateController
             GUI.enabled = false;
             var data = EditorData;
             var curStateName = data.EditorStateNames[selectionIndex];
-            GUILayout.TextField(curStateName);
+            EditorGUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
             if (data.EditorSelectedName == curStateName)

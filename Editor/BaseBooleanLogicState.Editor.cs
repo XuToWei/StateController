@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 
 namespace StateController
@@ -302,7 +303,7 @@ namespace StateController
             GUI.enabled = false;
             var data1 = EditorData1;
             var curStateName = data1.EditorStateNames[selectionIndex];
-            GUILayout.TextField(curStateName);
+            EditorGUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
             if (data1.EditorSelectedName == curStateName)
@@ -334,7 +335,7 @@ namespace StateController
             GUI.enabled = false;
             var data2 = EditorData2;
             var curStateName = data2.EditorStateNames[selectionIndex];
-            GUILayout.TextField(curStateName);
+            EditorGUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
             if (data2.EditorSelectedName == curStateName)
