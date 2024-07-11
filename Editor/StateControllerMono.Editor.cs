@@ -368,6 +368,12 @@ namespace StateController
         private void EditorOnStateNameBeginGUI(int selectionIndex)
         {
             GUILayout.BeginHorizontal();
+
+            GUI.enabled = true;
+            float fixedWidth = EditorStyles.label.fixedWidth;
+            GUI.skin.label.fixedWidth = 25;
+            GUILayout.Label(selectionIndex.ToString());
+            GUI.skin.label.fixedWidth = fixedWidth;
         }
 
         private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
@@ -384,10 +390,9 @@ namespace StateController
             var curSateName = selectedData.EditorStateNames[selectionIndex];
             if (m_EditorSelectedStatesRenameButtons[selectionIndex])
             {
-                string curStateName = m_EditorSelectedStatesRenameNames[selectionIndex];
                 GUI.enabled = true;
                 m_EditorSelectedStatesRenameNames[selectionIndex] = EditorGUILayout.TextField(curStateName);
-                GUI.enabled = curSateName != m_EditorSelectedStatesRenameNames[selectionIndex];
+                GUI.enabled = !selectedData.EditorStateNames.Contains(m_EditorSelectedStatesRenameNames[selectionIndex]);
                 if (GUILayout.Button("Rename"))
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Change State Name");
@@ -410,6 +415,30 @@ namespace StateController
             }
             else
             {
+                GUI.enabled = selectionIndex > 0 && !m_EditorSelectedStatesRenameButtons.Contains(true);
+                if (GUILayout.Button("↑"))
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Move Up State");
+                    (selectedData.EditorStateNames[selectionIndex - 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex - 1]);
+                    (m_EditorSelectedStatesRenameButtons[selectionIndex - 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex - 1]);
+                    (m_EditorSelectedStatesRenameNames[selectionIndex - 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex - 1]);
+                    foreach (var state in EditorStates)
+                    {
+                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, selectionIndex - 1, selectionIndex);
+                    }
+                }
+                GUI.enabled = selectionIndex < selectedData.EditorStateNames.Count - 1 && !m_EditorSelectedStatesRenameButtons.Contains(true);
+                if (GUILayout.Button("↓"))
+                {
+                    Undo.RegisterCompleteObjectUndo(this, "Move Down State");
+                    (selectedData.EditorStateNames[selectionIndex + 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex + 1]);
+                    (m_EditorSelectedStatesRenameButtons[selectionIndex + 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex + 1]);
+                    (m_EditorSelectedStatesRenameNames[selectionIndex + 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex + 1]);
+                    foreach (var state in EditorStates)
+                    {
+                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, selectionIndex + 1, selectionIndex);
+                    }
+                }
                 GUI.enabled = true;
                 var color = GUI.color;
                 if (selectedData.EditorSelectedName == curSateName)

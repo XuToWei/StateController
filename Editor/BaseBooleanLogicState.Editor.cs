@@ -157,6 +157,18 @@ namespace StateController
             }
         }
 
+        internal override void EditorOnDataSwitchState(string dataName, int index1, int index2)
+        {
+            if (EditorDataName1 == dataName)
+            {
+                (EditorStateDatas1[index1], EditorStateDatas1[index2]) = (EditorStateDatas1[index2], EditorStateDatas1[index1]);
+            }
+            else if (EditorDataName2 == dataName)
+            {
+                (EditorStateDatas2[index1], EditorStateDatas2[index2]) = (EditorStateDatas2[index2], EditorStateDatas2[index1]);
+            }
+        }
+
         internal override bool EditorCheckIsConnection(StateControllerData data)
         {
             if (EditorDataName1 == data.EditorName || (EditorBooleanLogicType != BooleanLogicType.None && EditorDataName2 == data.EditorName))

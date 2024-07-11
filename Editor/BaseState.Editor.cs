@@ -17,6 +17,7 @@ namespace StateController
         internal abstract void EditorOnRefresh();
         internal abstract void EditorOnDataRename(string oldDataName, string newDataName);
         internal abstract void EditorOnDataRemoveState(string dataName, int index);
+        internal abstract void EditorOnDataSwitchState(string dataName, int index1, int index2);
         internal abstract bool EditorCheckIsConnection(StateControllerData data);
     }
 }

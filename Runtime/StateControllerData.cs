@@ -26,6 +26,7 @@ namespace StateController
         private List<LinkData> m_LinkDatas = new List<LinkData>();
 
         private string m_SelectedName;
+        private int m_SelectedIndex = -1;
         private StateControllerMono m_ControllerMono;
         public string Name => m_Name;
         public List<string> StateNames => m_StateNames;
@@ -41,12 +42,37 @@ namespace StateController
                 if (index < 0)
                     throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
                 m_SelectedName = value;
+                m_SelectedIndex = index;
                 foreach (var state in m_ControllerMono.States)
                 {
                     state.OnRefresh();
                 }
                 var linkData = m_LinkDatas[index];
                 var data = m_ControllerMono.GetData(linkData.TargetDataName);
+                if (data != null && !string.IsNullOrEmpty(linkData.TargetSelectedName))
+                {
+                    data.SelectedName = linkData.TargetSelectedName;
+                }
+            }
+        }
+
+        public int SelectedIndex
+        {
+            get => m_SelectedIndex;
+            set
+            {
+                if (value < 0 || value >= m_StateNames.Count)
+                    throw new Exception($"State index '{value}' is not in data '{m_Name}'.");
+                if(m_SelectedIndex == value)
+                    return;
+                m_SelectedIndex = value;
+                m_SelectedName = m_StateNames[m_SelectedIndex];
+                foreach (var state in m_Controller.States)
+                {
+                    state.OnRefresh();
+                }
+                var linkData = m_LinkDatas[m_SelectedIndex];
+                var data = m_Controller.GetData(linkData.TargetDataName);
                 if (data != null && !string.IsNullOrEmpty(linkData.TargetSelectedName))
                 {
                     data.SelectedName = linkData.TargetSelectedName;
