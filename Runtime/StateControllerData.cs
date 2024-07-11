@@ -67,12 +67,12 @@ namespace StateController
                     return;
                 m_SelectedIndex = value;
                 m_SelectedName = m_StateNames[m_SelectedIndex];
-                foreach (var state in m_Controller.States)
+                foreach (var state in m_ControllerMono.States)
                 {
                     state.OnRefresh();
                 }
                 var linkData = m_LinkDatas[m_SelectedIndex];
-                var data = m_Controller.GetData(linkData.TargetDataName);
+                var data = m_ControllerMono.GetData(linkData.TargetDataName);
                 if (data != null && !string.IsNullOrEmpty(linkData.TargetSelectedName))
                 {
                     data.SelectedName = linkData.TargetSelectedName;

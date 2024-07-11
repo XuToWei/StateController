@@ -391,7 +391,7 @@ namespace StateController
             if (m_EditorSelectedStatesRenameButtons[selectionIndex])
             {
                 GUI.enabled = true;
-                m_EditorSelectedStatesRenameNames[selectionIndex] = EditorGUILayout.TextField(curStateName);
+                m_EditorSelectedStatesRenameNames[selectionIndex] = EditorGUILayout.TextField(m_EditorSelectedStatesRenameNames[selectionIndex]);
                 GUI.enabled = !selectedData.EditorStateNames.Contains(m_EditorSelectedStatesRenameNames[selectionIndex]);
                 if (GUILayout.Button("Rename"))
                 {
@@ -420,6 +420,7 @@ namespace StateController
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Move Up State");
                     (selectedData.EditorStateNames[selectionIndex - 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex - 1]);
+                    (selectedData.EditorLinkDatas[selectionIndex - 1], selectedData.EditorLinkDatas[selectionIndex]) = (selectedData.EditorLinkDatas[selectionIndex], selectedData.EditorLinkDatas[selectionIndex - 1]);
                     (m_EditorSelectedStatesRenameButtons[selectionIndex - 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex - 1]);
                     (m_EditorSelectedStatesRenameNames[selectionIndex - 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex - 1]);
                     foreach (var state in EditorStates)
@@ -432,6 +433,7 @@ namespace StateController
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Move Down State");
                     (selectedData.EditorStateNames[selectionIndex + 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex + 1]);
+                    (selectedData.EditorLinkDatas[selectionIndex + 1], selectedData.EditorLinkDatas[selectionIndex]) = (selectedData.EditorLinkDatas[selectionIndex], selectedData.EditorLinkDatas[selectionIndex + 1]);
                     (m_EditorSelectedStatesRenameButtons[selectionIndex + 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex + 1]);
                     (m_EditorSelectedStatesRenameNames[selectionIndex + 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex + 1]);
                     foreach (var state in EditorStates)
