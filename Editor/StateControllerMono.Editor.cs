@@ -415,30 +415,33 @@ namespace StateController
             }
             else
             {
-                GUI.enabled = selectionIndex > 0 && !m_EditorSelectedStatesRenameButtons.Contains(true);
+                GUI.enabled = selectedData.EditorStateNames.Count >= 2 && !m_EditorSelectedStatesRenameButtons.Contains(true);
                 if (GUILayout.Button("↑"))
                 {
+                    int index1 = selectionIndex < 1 ? selectedData.EditorStateNames.Count - 1 : selectionIndex - 1;
+                    int index2 = selectionIndex;
                     Undo.RegisterCompleteObjectUndo(this, "Move Up State");
-                    (selectedData.EditorStateNames[selectionIndex - 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex - 1]);
-                    (selectedData.EditorLinkDatas[selectionIndex - 1], selectedData.EditorLinkDatas[selectionIndex]) = (selectedData.EditorLinkDatas[selectionIndex], selectedData.EditorLinkDatas[selectionIndex - 1]);
-                    (m_EditorSelectedStatesRenameButtons[selectionIndex - 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex - 1]);
-                    (m_EditorSelectedStatesRenameNames[selectionIndex - 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex - 1]);
+                    (selectedData.EditorStateNames[index1], selectedData.EditorStateNames[index2]) = (selectedData.EditorStateNames[index2], selectedData.EditorStateNames[index1]);
+                    (selectedData.EditorLinkDatas[index1], selectedData.EditorLinkDatas[index2]) = (selectedData.EditorLinkDatas[index2], selectedData.EditorLinkDatas[index1]);
+                    (m_EditorSelectedStatesRenameButtons[index1], m_EditorSelectedStatesRenameButtons[index2]) = (m_EditorSelectedStatesRenameButtons[index2], m_EditorSelectedStatesRenameButtons[index1]);
+                    (m_EditorSelectedStatesRenameNames[index1], m_EditorSelectedStatesRenameNames[index2]) = (m_EditorSelectedStatesRenameNames[index2], m_EditorSelectedStatesRenameNames[index1]);
                     foreach (var state in EditorStates)
                     {
-                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, selectionIndex - 1, selectionIndex);
+                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, index1, index2);
                     }
                 }
-                GUI.enabled = selectionIndex < selectedData.EditorStateNames.Count - 1 && !m_EditorSelectedStatesRenameButtons.Contains(true);
                 if (GUILayout.Button("↓"))
                 {
+                    int index1 = selectionIndex >= selectedData.EditorStateNames.Count - 1 ? 0 : selectionIndex + 1;
+                    int index2 = selectionIndex;
                     Undo.RegisterCompleteObjectUndo(this, "Move Down State");
-                    (selectedData.EditorStateNames[selectionIndex + 1], selectedData.EditorStateNames[selectionIndex]) = (selectedData.EditorStateNames[selectionIndex], selectedData.EditorStateNames[selectionIndex + 1]);
-                    (selectedData.EditorLinkDatas[selectionIndex + 1], selectedData.EditorLinkDatas[selectionIndex]) = (selectedData.EditorLinkDatas[selectionIndex], selectedData.EditorLinkDatas[selectionIndex + 1]);
-                    (m_EditorSelectedStatesRenameButtons[selectionIndex + 1], m_EditorSelectedStatesRenameButtons[selectionIndex]) = (m_EditorSelectedStatesRenameButtons[selectionIndex], m_EditorSelectedStatesRenameButtons[selectionIndex + 1]);
-                    (m_EditorSelectedStatesRenameNames[selectionIndex + 1], m_EditorSelectedStatesRenameNames[selectionIndex]) = (m_EditorSelectedStatesRenameNames[selectionIndex], m_EditorSelectedStatesRenameNames[selectionIndex + 1]);
+                    (selectedData.EditorStateNames[index1], selectedData.EditorStateNames[index2]) = (selectedData.EditorStateNames[index2], selectedData.EditorStateNames[index1]);
+                    (selectedData.EditorLinkDatas[index1], selectedData.EditorLinkDatas[index2]) = (selectedData.EditorLinkDatas[index2], selectedData.EditorLinkDatas[index1]);
+                    (m_EditorSelectedStatesRenameButtons[index1], m_EditorSelectedStatesRenameButtons[index2]) = (m_EditorSelectedStatesRenameButtons[index2], m_EditorSelectedStatesRenameButtons[index1]);
+                    (m_EditorSelectedStatesRenameNames[index1], m_EditorSelectedStatesRenameNames[index2]) = (m_EditorSelectedStatesRenameNames[index2], m_EditorSelectedStatesRenameNames[index1]);
                     foreach (var state in EditorStates)
                     {
-                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, selectionIndex + 1, selectionIndex);
+                        state.EditorOnDataSwitchState(m_EditorSelectedDataName, index1, index2);
                     }
                 }
                 GUI.enabled = true;
