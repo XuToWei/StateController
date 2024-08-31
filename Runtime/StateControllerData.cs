@@ -28,8 +28,11 @@ namespace StateController
         private string m_SelectedName;
         private int m_SelectedIndex = -1;
         private StateControllerMono m_ControllerMono;
+
         public string Name => m_Name;
         public List<string> StateNames => m_StateNames;
+        public Action<string> OnSelectedNameChanged;
+        public Action<int> OnSelectedIndexChanged;
 
         public string SelectedName
         {
@@ -53,6 +56,8 @@ namespace StateController
                 {
                     data.SelectedName = linkData.TargetSelectedName;
                 }
+                OnSelectedNameChanged?.Invoke(m_SelectedName);
+                OnSelectedIndexChanged?.Invoke(m_SelectedIndex);
             }
         }
 
@@ -77,6 +82,8 @@ namespace StateController
                 {
                     data.SelectedName = linkData.TargetSelectedName;
                 }
+                OnSelectedNameChanged?.Invoke(m_SelectedName);
+                OnSelectedIndexChanged?.Invoke(m_SelectedIndex);
             }
         }
 
