@@ -22,19 +22,19 @@ namespace StateController
 
     public partial class StateControllerData
     {
-        private string m_EditorSelectedName;
         private StateControllerMono m_EditorControllerMono;
         internal List<string> EditorStateNames => m_StateNames;
 
         internal string EditorSelectedName
         {
-            get => m_EditorSelectedName;
+            get => m_SelectedName;
             set
             {
                 int index = m_StateNames.IndexOf(value);
                 if (index < 0)
                     throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
-                m_EditorSelectedName = value;
+                m_SelectedName = value;
+                m_SelectedIndex = index;
                 foreach (var state in m_EditorControllerMono.EditorStates)
                 {
                     state.EditorOnRefresh();
@@ -45,13 +45,16 @@ namespace StateController
                 {
                     data.EditorSelectedName = linkData.EditorTargetSelectedName;
                 }
+                OnSelectedNameChanged?.Invoke(m_SelectedName);
+                OnSelectedIndexChanged?.Invoke(m_SelectedIndex);
                 EditorApplication.QueuePlayerLoopUpdate();
             }
         }
 
         internal void EditorClearSelectedName()
         {
-            m_EditorSelectedName = string.Empty;
+            m_SelectedName = string.Empty;
+            m_SelectedIndex = -1;
         }
 
         internal List<LinkData> EditorLinkDatas => m_LinkDatas;
