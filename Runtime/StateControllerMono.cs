@@ -65,7 +65,7 @@ namespace StateController
             return null;
         }
 
-        public string GetSelectedIndex(string dataName)
+        public int GetSelectedIndex(string dataName)
         {
             var data = GetData(dataName);
             if (data != null)
