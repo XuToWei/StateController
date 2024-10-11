@@ -66,10 +66,10 @@ namespace StateController
             get => m_SelectedIndex;
             set
             {
-                if (value < 0 || value >= m_StateNames.Count)
-                    throw new Exception($"State index '{value}' is not in data '{m_Name}'.");
                 if(m_SelectedIndex == value)
                     return;
+                if (value < 0 || value >= m_StateNames.Count)
+                    throw new Exception($"State index '{value}' is not in data '{m_Name}'.");
                 m_SelectedIndex = value;
                 m_SelectedName = m_StateNames[m_SelectedIndex];
                 foreach (var state in m_ControllerMono.States)

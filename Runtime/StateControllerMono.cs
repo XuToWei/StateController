@@ -13,8 +13,18 @@ namespace StateController
         private readonly List<BaseState> m_States = new List<BaseState>();
         public List<BaseState> States => m_States;
 
+        private bool m_IsInit;
+
         private void Awake()
         {
+            TryInit();
+        }
+
+        private void TryInit()
+        {
+            if(m_IsInit)
+                return;
+            m_IsInit = true;
             m_States.Clear();
             GetComponentsInChildren<BaseState>(true, m_States);
             foreach (var data in m_ControllerDatas)
@@ -27,12 +37,21 @@ namespace StateController
             }
         }
 
-        public void SelectedName(string dataName, string stateName)
+        public void SetSelectedName(string dataName, string selectedName)
         {
             var data = GetData(dataName);
             if (data != null)
             {
-                data.SelectedName = stateName;
+                data.SelectedName = selectedName;
+            }
+        }
+
+        public void SetSelectedIndex(string dataName, int selectedIndex)
+        {
+            var data = GetData(dataName);
+            if (data != null)
+            {
+                data.SelectedIndex = selectedIndex;
             }
         }
 
@@ -44,6 +63,16 @@ namespace StateController
                 return data.SelectedName;
             }
             return null;
+        }
+
+        public string GetSelectedIndex(string dataName)
+        {
+            var data = GetData(dataName);
+            if (data != null)
+            {
+                return data.SelectedIndex;
+            }
+            return -1;
         }
 
         public List<string> GetStateNames(string dataName)
@@ -58,6 +87,7 @@ namespace StateController
         
         public StateControllerData GetData(string dateName)
         {
+            TryInit();
             foreach (var data in m_ControllerDatas)
             {
                 if (data.Name == dateName)
