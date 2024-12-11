@@ -9,6 +9,21 @@ namespace StateController
 {
     public partial class StateControllerMono
     {
+        private const int ConstHorizontalButtonWidth = 110;
+        
+        private static TextEditor s_TextEditor;
+        private static TextEditor TextEditor
+        {
+            get
+            {
+                if (s_TextEditor == null)
+                {
+                    s_TextEditor = new TextEditor();
+                }
+                return s_TextEditor;
+            }
+        }
+
         private readonly List<BaseState> m_EditorStates = new List<BaseState>();
         internal List<BaseState> EditorStates
         {
@@ -62,6 +77,7 @@ namespace StateController
         }
 
         [BoxGroup("Add Data")]
+        [HorizontalGroup("Add Data/")]
         [LabelText("New Data Name")]
         [PropertyOrder(10)]
         [ShowInInspector]
@@ -71,6 +87,7 @@ namespace StateController
         private string m_EditorNewDataName;
 
         [BoxGroup("Add Data")]
+        [HorizontalGroup("Add Data/", Width = ConstHorizontalButtonWidth)]
         [GUIColor(0, 1, 0)]
         [Button("Add Data")]
         [PropertyOrder(11)]
@@ -88,6 +105,7 @@ namespace StateController
         }
 
         [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/")]
         [LabelText("Data Name")]
         [PropertyOrder(20)]
         [ShowInInspector]
@@ -98,94 +116,10 @@ namespace StateController
 
         private StateControllerData EditorSelectedData => GetData(m_EditorSelectedDataName);
 
-        [BoxGroup("Select Data/State")]
-        [LabelText("State Name")]
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/")]
+        [LabelText("Rename")]
         [PropertyOrder(21)]
-        [ShowInInspector]
-        [EnableIf("EditorIsSelectedData")]
-        [InfoBox("State name already exists!", 
-            InfoMessageType.Warning,
-            "EditorShowNewStateNameInfo")]
-        private string m_EditorNewStateName;
-
-        [BoxGroup("Select Data/State")]
-        [GUIColor(0,1,0)]
-        [Button("Add State Name")]
-        [PropertyOrder(22)]
-        [EnableIf("EditorCheckCanAddStateName")]
-        private void EditorAddStateName()
-        {
-            if(!EditorCheckCanAddStateName())
-                return;
-            if (string.IsNullOrEmpty(m_EditorNewStateName))
-                return;
-            var data = EditorSelectedData;
-            data.EditorStateNames.Add(m_EditorNewStateName);
-            m_EditorSelectedStatesRenameButtons.Add(false);
-            m_EditorSelectedStatesRenameNames.Add(m_EditorNewStateName);
-            data.EditorLinkDatas.Add(new LinkData());
-            m_EditorNewStateName = string.Empty;
-            EditorRefresh();
-        }
-
-        private readonly List<string> m_EditorEmptyListString = new List<string>();
-        [BoxGroup("Select Data/State")]
-        [LabelText("State Names")]
-        [PropertyOrder(23)]
-        [ShowInInspector]
-        [ReadOnly]
-        [EnableIf("EditorIsSelectedData")]
-        [ListDrawerSettings(DefaultExpandedState = true,
-            OnBeginListElementGUI = "EditorOnStateNameBeginGUI",
-            OnEndListElementGUI = "EditorOnStateNameEndGUI")]
-        private List<string> EditorSelectedStateNames
-        {
-            get
-            {
-                var data = EditorSelectedData;
-                if (data == null)
-                {
-                    return m_EditorEmptyListString;
-                }
-                return data.EditorStateNames;
-            }
-        }
-        
-        private readonly List<BaseState> m_EditorListStates = new List<BaseState>();
-        [BoxGroup("Select Data/State")]
-        [LabelText("State Children")]
-        [PropertyOrder(24)]
-        [ShowInInspector]
-        [ReadOnly]
-        [ListDrawerSettings(DefaultExpandedState = true)]
-        [EnableIf("EditorIsSelectedData")]
-        private List<BaseState> EditorSelectedStates
-        {
-            get
-            {
-                var data = EditorSelectedData;
-                if (data == null)
-                {
-                    m_EditorListStates.Clear();
-                }
-                else
-                {
-                    m_EditorListStates.Clear();
-                    foreach (var state in EditorStates)
-                    {
-                        if (state.EditorCheckIsConnection(data))
-                        {
-                            m_EditorListStates.Add(state);
-                        }
-                    }
-                }
-                return m_EditorListStates;
-            }
-        }
-
-        [BoxGroup("Select Data/Rename Data")]
-        [LabelText("Data Name")]
-        [PropertyOrder(25)]
         [ShowInInspector]
         [EnableIf("EditorIsSelectedData")]
         [InfoBox("Data name already exists!", 
@@ -193,10 +127,11 @@ namespace StateController
             "EditorShowRenameDataNameInfo")]
         private string m_EditorRenameDataName;
 
-        [BoxGroup("Select Data/Rename Data")]
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f + 5)]
         [GUIColor(0,1,0)]
-        [Button("Rename Data")]
-        [PropertyOrder(26)]
+        [Button("Rename")]
+        [PropertyOrder(22)]
         [EnableIf("EditorCheckCanRenameData")]
         private void EditorRenameSelectedDataName()
         {
@@ -229,9 +164,59 @@ namespace StateController
         }
 
         [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 15)]
+        [GUIColor(0,1,0)]
+        [Button("Copy")]
+        [PropertyOrder(23)]
+        [EnableIf("EditorIsSelectedData")]
+        private void EditorCopySelectedData()
+        {
+            TextEditor.text = JsonUtility.ToJson(EditorSelectedData);
+        }
+
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 10)]
         [GUIColor(1,1,0)]
-        [Button("Remove Data")]
-        [PropertyOrder(30)]
+        [Button("Paste")]
+        [PropertyOrder(24)]
+        [EnableIf("EditorCanPasteSelectedData")]
+        private void EditorPasteSelectedData()
+        {
+            var selectedData = EditorSelectedData;
+            bool hasConnection = false;
+            foreach (var state in EditorStates)
+            {
+                if (state.EditorCheckIsConnection(selectedData))
+                {
+                    hasConnection = true;
+                    break;
+                }
+            }
+            if (hasConnection)
+            {
+                EditorUtility.DisplayDialog("Paste Error", $"SelectedData({selectedData.EditorName}) has connection by state children, can't paste!", "ok");
+                return;
+            }
+            StateControllerData data = JsonUtility.FromJson<StateControllerData>(TextEditor.text);
+            selectedData.EditorStateNames.Clear();
+            selectedData.EditorLinkDatas.Clear();
+            m_EditorSelectedStatesRenameButtons.Clear();
+            m_EditorSelectedStatesRenameNames.Clear();
+            m_EditorNewStateName = string.Empty;
+            foreach (string stateName in data.EditorStateNames)
+            {
+                selectedData.EditorStateNames.Add(stateName);
+                selectedData.EditorLinkDatas.Add(new LinkData());
+                m_EditorSelectedStatesRenameButtons.Add(false);
+                m_EditorSelectedStatesRenameNames.Add(stateName);
+            }
+        }
+
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/", Width = 20)]
+        [GUIColor(1,0,0)]
+        [Button("X")]
+        [PropertyOrder(25)]
         [EnableIf("EditorIsSelectedData")]
         private void EditorRemoveSelectedData()
         {
@@ -248,6 +233,93 @@ namespace StateController
             m_EditorRenameDataName = string.Empty;
             m_EditorNewStateName = string.Empty;
             EditorRefresh();
+        }
+
+        [BoxGroup("Select Data/State")]
+        [HorizontalGroup("Select Data/State/")]
+        [LabelText("State Name")]
+        [PropertyOrder(30)]
+        [ShowInInspector]
+        [EnableIf("EditorIsSelectedData")]
+        [InfoBox("State name already exists!", 
+            InfoMessageType.Warning,
+            "EditorShowNewStateNameInfo")]
+        private string m_EditorNewStateName;
+
+        [BoxGroup("Select Data/State")]
+        [HorizontalGroup("Select Data/State/", Width = ConstHorizontalButtonWidth - 5)]
+        [GUIColor(0,1,0)]
+        [Button("Add State Name")]
+        [PropertyOrder(31)]
+        [EnableIf("EditorCheckCanAddStateName")]
+        private void EditorAddStateName()
+        {
+            if(!EditorCheckCanAddStateName())
+                return;
+            if (string.IsNullOrEmpty(m_EditorNewStateName))
+                return;
+            var data = EditorSelectedData;
+            data.EditorStateNames.Add(m_EditorNewStateName);
+            data.EditorLinkDatas.Add(new LinkData());
+            m_EditorSelectedStatesRenameButtons.Add(false);
+            m_EditorSelectedStatesRenameNames.Add(m_EditorNewStateName);
+            m_EditorNewStateName = string.Empty;
+            EditorRefresh();
+        }
+
+        private readonly List<string> m_EditorEmptyListString = new List<string>();
+        [BoxGroup("Select Data/State")]
+        [LabelText("State Names")]
+        [PropertyOrder(32)]
+        [ShowInInspector]
+        [ReadOnly]
+        [EnableIf("EditorIsSelectedData")]
+        [ListDrawerSettings(DefaultExpandedState = true,
+            OnBeginListElementGUI = "EditorOnStateNameBeginGUI",
+            OnEndListElementGUI = "EditorOnStateNameEndGUI")]
+        private List<string> EditorSelectedStateNames
+        {
+            get
+            {
+                var data = EditorSelectedData;
+                if (data == null)
+                {
+                    return m_EditorEmptyListString;
+                }
+                return data.EditorStateNames;
+            }
+        }
+
+        private readonly List<BaseState> m_EditorListStates = new List<BaseState>();
+        [BoxGroup("Select Data/State")]
+        [LabelText("State Children")]
+        [PropertyOrder(33)]
+        [ShowInInspector]
+        [ReadOnly]
+        [ListDrawerSettings]
+        [EnableIf("EditorIsSelectedData")]
+        private List<BaseState> EditorSelectedStates
+        {
+            get
+            {
+                var data = EditorSelectedData;
+                if (data == null)
+                {
+                    m_EditorListStates.Clear();
+                }
+                else
+                {
+                    m_EditorListStates.Clear();
+                    foreach (var state in EditorStates)
+                    {
+                        if (state.EditorCheckIsConnection(data))
+                        {
+                            m_EditorListStates.Add(state);
+                        }
+                    }
+                }
+                return m_EditorListStates;
+            }
         }
 
         private bool EditorShowNewDataNameInfo()
@@ -286,6 +358,11 @@ namespace StateController
                     return true;
             }
             return false;
+        }
+
+        private bool EditorCanPasteSelectedData()
+        {
+            return EditorIsSelectedData() && !string.IsNullOrEmpty(TextEditor.text);
         }
 
         private readonly List<string> m_EditorControllerNames = new List<string>();
@@ -382,7 +459,7 @@ namespace StateController
         private void EditorOnStateNameEndGUI(int selectionIndex)
         {
             var selectedData = EditorSelectedData;
-            if (selectionIndex >= selectedData.EditorStateNames.Count)
+            if (selectionIndex >= selectedData.EditorStateNames.Count || selectionIndex >= m_EditorSelectedStatesRenameButtons.Count)
             {
                 GUILayout.EndHorizontal();
                 return;
@@ -458,7 +535,7 @@ namespace StateController
                     selectedData.EditorSelectedName = curSateName;
                 }
                 GUI.enabled = true;
-                GUI.color = color;
+                GUI.color = new Color(1,0,0);
                 if (GUILayout.Button("X"))
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Remove State");
@@ -478,6 +555,7 @@ namespace StateController
                     return;
                 }
                 // link
+                GUI.color = color;
                 GUILayout.Label("Link");
                 var curLinkData = selectedData.EditorLinkDatas[selectionIndex];
                 var dataNames = EditorGetCanLinkDataNames(selectedData.EditorName);
