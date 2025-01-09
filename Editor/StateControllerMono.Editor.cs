@@ -473,6 +473,10 @@ namespace StateController
                 if (GUILayout.Button("Rename"))
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Change State Name");
+                    if (selectedData.EditorSelectedName == curSateName)
+                    {
+                        selectedData.EditorClearSelectedName();
+                    }
                     string newStateName = m_EditorSelectedStatesRenameNames[selectionIndex];
                     string oldStateName = selectedData.EditorStateNames[selectionIndex];
                     selectedData.EditorStateNames[selectionIndex] = newStateName;
