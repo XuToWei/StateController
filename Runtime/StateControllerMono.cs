@@ -75,16 +75,30 @@ namespace StateController
             return -1;
         }
 
-        public List<string> GetStateNames(string dataName)
+        public string[] GetStateNames(string dataName)
         {
             var data = GetData(dataName);
             if (data != null)
             {
-                return data.StateNames;
+                return data.StateNames.ToArray();
             }
             return null;
         }
-        
+
+        public void GetStateNames(string dataName, List<string> results)
+        {
+            if (results == null)
+            {
+                throw new System.ArgumentNullException(nameof(results));
+            }
+            results.Clear();
+            var data = GetData(dataName);
+            if (data != null)
+            {
+                results.AddRange(data.StateNames);
+            }
+        }
+
         public StateControllerData GetData(string dateName)
         {
             TryInit();
