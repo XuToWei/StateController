@@ -27,6 +27,14 @@ namespace StateController
             m_IsInit = true;
             m_States.Clear();
             GetComponentsInChildren<BaseState>(true, m_States);
+            //不是该Mono的子节点就移除
+            for(int i = m_States.Count - 1; i >= 0; i--)
+            {
+                if (m_States[i].GetComponentInParent<StateControllerMono>(true) != this)
+                {
+                    m_States.RemoveAt(i);
+                }
+            }
             foreach (var data in m_ControllerDatas)
             {
                 data.OnInit(this);

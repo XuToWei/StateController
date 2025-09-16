@@ -31,6 +31,14 @@ namespace StateController
             {
                 m_EditorStates.Clear();
                 GetComponentsInChildren<BaseState>(true, m_EditorStates);
+                //不是该Mono的子节点就移除
+                for(int i = m_EditorStates.Count - 1; i >= 0; i--)
+                {
+                    if (m_EditorStates[i].GetComponentInParent<StateControllerMono>(true) != this)
+                    {
+                        m_EditorStates.RemoveAt(i);
+                    }
+                }
                 return m_EditorStates;
             }
         }
