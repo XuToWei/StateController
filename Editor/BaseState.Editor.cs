@@ -1,3 +1,5 @@
+using Sirenix.OdinInspector;
+
 #if UNITY_EDITOR
 namespace StateController
 {
@@ -12,6 +14,7 @@ namespace StateController
             }
         }
 
+        [ShowInInspector]
         internal StateControllerMono EditorControllerMono => GetComponentInParent<StateControllerMono>(true);
         internal abstract void EditorRefresh();
         internal abstract void EditorOnRefresh();
