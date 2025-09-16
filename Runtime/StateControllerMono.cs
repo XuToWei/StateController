@@ -28,9 +28,10 @@ namespace StateController
             m_States.Clear();
             GetComponentsInChildren<BaseState>(true, m_States);
             //不是该Mono的子节点就移除
+            GameObject selfGo = gameObject;
             for(int i = m_States.Count - 1; i >= 0; i--)
             {
-                if (m_States[i].GetComponentInParent<StateControllerMono>(true) != this)
+                if (m_States[i].gameObject != selfGo && m_States[i].GetComponentInParent<StateControllerMono>(true) != this)
                 {
                     m_States.RemoveAt(i);
                 }
