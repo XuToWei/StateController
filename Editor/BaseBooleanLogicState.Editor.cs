@@ -6,12 +6,30 @@ using UnityEngine;
 
 namespace StateController
 {
+    [InfoBox("StateControllerData is not all applied, refresh failed.", InfoMessageType.Warning, "EditorShowWarning")]
     public partial class BaseBooleanLogicState
     {
+        [PropertyOrder(10)]
+        private bool EditorShowWarning
+        {
+            get
+            {
+                if (EditorBooleanLogicType == BooleanLogicType.None)
+                {
+                    return EditorData1 == null || string.IsNullOrEmpty(EditorData1.EditorSelectedName);
+                }
+                else
+                {
+                    return EditorData1 == null || string.IsNullOrEmpty(EditorData1.EditorSelectedName) ||
+                           EditorData2 == null || string.IsNullOrEmpty(EditorData2.EditorSelectedName);
+                }
+            }
+        }
+
         [ShowInInspector]
         [BoxGroup("Data1")]
         [LabelText("Data Name")]
-        [PropertyOrder(10)]
+        [PropertyOrder(20)]
         [ValueDropdown("EditorGetDataNames1")]
         [OnValueChanged("EditorOnSelectedData1")]
         private string EditorDataName1
@@ -23,7 +41,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data1")]
         [LabelText("State Datas")]
-        [PropertyOrder(11)]
+        [PropertyOrder(21)]
         [ShowIf("EditorIsSelectedData1")]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
@@ -38,7 +56,7 @@ namespace StateController
         }
 
         [ShowInInspector]
-        [PropertyOrder(20)]
+        [PropertyOrder(30)]
         [OnValueChanged("EditorRefreshSelectedName")]
         public BooleanLogicType EditorBooleanLogicType
         {
@@ -49,7 +67,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data2")]
         [LabelText("Data Name")]
-        [PropertyOrder(30)]
+        [PropertyOrder(40)]
         [EnableIf("EditorCanShowData2")]
         [ValueDropdown("EditorGetDataNames2")]
         [OnValueChanged("EditorOnSelectedData2")]
@@ -62,7 +80,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data2")]
         [LabelText("State Datas")]
-        [PropertyOrder(31)]
+        [PropertyOrder(41)]
         [EnableIf("EditorCanShowData2")]
         [ShowIf("EditorIsSelectedData2")]
         [ListDrawerSettings(DefaultExpandedState = true,

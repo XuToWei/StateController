@@ -1,6 +1,6 @@
+#if UNITY_EDITOR
 using Sirenix.OdinInspector;
 
-#if UNITY_EDITOR
 namespace StateController
 {
     public partial class BaseState
