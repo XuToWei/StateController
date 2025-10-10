@@ -9,25 +9,43 @@ namespace StateController
 {
     public partial class BaseSelectableState<T>
     {
-        private SelectableStateDrawSettingAttribute DrawSettingAttribute
-        {
-            get
-            {
-                var objects = GetType().GetCustomAttributes(typeof(SelectableStateDrawSettingAttribute), true);
-                if (objects.Length > 0)
-                {
-                    return (SelectableStateDrawSettingAttribute)objects[0];
-                }
-                return null;
-            }
-        }
-
+        private bool? m_DrawSettingLineBreak;
         private bool DrawSettingLineBreak
         {
             get
             {
-                var drawSetting = DrawSettingAttribute;
-                return drawSetting != null && drawSetting.LineBreak;
+                if (m_DrawSettingLineBreak.HasValue)
+                {
+                    return m_DrawSettingLineBreak.Value;
+                }
+                m_DrawSettingLineBreak = false;
+                var objects = GetType().GetCustomAttributes(typeof(SelectableStateDrawSettingAttribute), true);
+                if (objects.Length > 0)
+                {
+                    var drawSetting = (SelectableStateDrawSettingAttribute)objects[0];
+                    m_DrawSettingLineBreak = drawSetting.LineBreak;
+                }
+                return m_DrawSettingLineBreak.Value;
+            }
+        }
+
+        private float? m_NameWidth;
+        private float NameWidth
+        {
+            get
+            {
+                if (m_NameWidth.HasValue)
+                {
+                    return m_NameWidth.Value;
+                }
+                m_NameWidth = -1;
+                var objects = GetType().GetCustomAttributes(typeof(SelectableStateNameWidthAttribute), true);
+                if (objects.Length > 0)
+                {
+                    var nameWidth = (SelectableStateNameWidthAttribute)objects[0];
+                    m_NameWidth = nameWidth.Width;
+                }
+                return m_NameWidth.Value;
             }
         }
         
@@ -199,7 +217,14 @@ namespace StateController
             GUI.enabled = false;
             var data = EditorData;
             var curStateName = data.EditorStateNames[selectionIndex];
-            EditorGUILayout.TextField(curStateName);
+            if (NameWidth > 0)
+            {
+                EditorGUILayout.TextField(curStateName, GUILayout.Width(NameWidth));
+            }
+            else
+            {
+                EditorGUILayout.TextField(curStateName);
+            }
             GUI.enabled = true;
             var color = GUI.color;
             if (data.EditorSelectedName == curStateName)
