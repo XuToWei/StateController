@@ -9,7 +9,7 @@ namespace StateController
 {
     public partial class StateControllerMono
     {
-        private const int ConstHorizontalButtonWidth = 110;
+        private const float ConstHorizontalButtonWidth = 110f;
         
         private static TextEditor s_TextEditor;
         private static TextEditor TextEditor
@@ -126,57 +126,10 @@ namespace StateController
         private StateControllerData EditorSelectedData => GetData(m_EditorSelectedDataName);
 
         [BoxGroup("Select Data")]
-        [HorizontalGroup("Select Data/")]
-        [LabelText("Rename")]
-        [PropertyOrder(21)]
-        [ShowInInspector]
-        [EnableIf("EditorIsSelectedData")]
-        [InfoBox("Data name already exists!", 
-            InfoMessageType.Warning,
-            "EditorShowRenameDataNameInfo")]
-        private string m_EditorRenameDataName;
-
-        [BoxGroup("Select Data")]
-        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f + 5)]
-        [GUIColor(0,1,0)]
-        [Button("Rename")]
-        [PropertyOrder(22)]
-        [EnableIf("EditorCheckCanRenameData")]
-        private void EditorRenameSelectedDataName()
-        {
-            if (string.IsNullOrEmpty(m_EditorRenameDataName))
-                return;
-            var selectedData = EditorSelectedData;
-            if (m_EditorRenameDataName == selectedData.EditorName)
-                return;
-            foreach (var data in EditorControllerDatas)
-            {
-                if(data == selectedData)
-                    continue;
-                if (data.EditorName == m_EditorRenameDataName)
-                {
-                    return;
-                }
-            }
-            foreach (var data in EditorControllerDatas)
-            {
-                if(data == selectedData)
-                    continue;
-                data.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);
-            }
-            foreach (var state in EditorStates)
-            {
-                state.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);
-            }
-            selectedData.EditorName = m_EditorRenameDataName;
-            m_EditorSelectedDataName = m_EditorRenameDataName;
-        }
-
-        [BoxGroup("Select Data")]
-        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 15)]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 15f)]
         [GUIColor(0,1,0)]
         [Button("Copy")]
-        [PropertyOrder(23)]
+        [PropertyOrder(21)]
         [EnableIf("EditorIsSelectedData")]
         private void EditorCopySelectedData()
         {
@@ -184,10 +137,10 @@ namespace StateController
         }
 
         [BoxGroup("Select Data")]
-        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 10)]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f - 10f)]
         [GUIColor(1,1,0)]
         [Button("Paste")]
-        [PropertyOrder(24)]
+        [PropertyOrder(22)]
         [EnableIf("EditorCanPasteSelectedData")]
         private void EditorPasteSelectedData()
         {
@@ -225,7 +178,7 @@ namespace StateController
         [HorizontalGroup("Select Data/", Width = 20)]
         [GUIColor(1,0,0)]
         [Button("X")]
-        [PropertyOrder(25)]
+        [PropertyOrder(23)]
         [EnableIf("EditorIsSelectedData")]
         private void EditorRemoveSelectedData()
         {
@@ -244,6 +197,54 @@ namespace StateController
             EditorRefresh();
         }
 
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/")]
+        [LabelWidth(ConstHorizontalButtonWidth * 0.5f + 5f)]
+        [LabelText("Rename")]
+        [PropertyOrder(24)]
+        [ShowInInspector]
+        [EnableIf("EditorIsSelectedData")]
+        [InfoBox("Data name already exists!", 
+            InfoMessageType.Warning,
+            "EditorShowRenameDataNameInfo")]
+        private string m_EditorRenameDataName;
+
+        [BoxGroup("Select Data")]
+        [HorizontalGroup("Select Data/", Width = ConstHorizontalButtonWidth * 0.5f + 5f)]
+        [GUIColor(0,1,0)]
+        [Button("Rename")]
+        [PropertyOrder(25)]
+        [EnableIf("EditorCheckCanRenameData")]
+        private void EditorRenameSelectedDataName()
+        {
+            if (string.IsNullOrEmpty(m_EditorRenameDataName))
+                return;
+            var selectedData = EditorSelectedData;
+            if (m_EditorRenameDataName == selectedData.EditorName)
+                return;
+            foreach (var data in EditorControllerDatas)
+            {
+                if(data == selectedData)
+                    continue;
+                if (data.EditorName == m_EditorRenameDataName)
+                {
+                    return;
+                }
+            }
+            foreach (var data in EditorControllerDatas)
+            {
+                if(data == selectedData)
+                    continue;
+                data.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);
+            }
+            foreach (var state in EditorStates)
+            {
+                state.EditorOnDataRename(m_EditorSelectedDataName, m_EditorRenameDataName);
+            }
+            selectedData.EditorName = m_EditorRenameDataName;
+            m_EditorSelectedDataName = m_EditorRenameDataName;
+        }
+
         [BoxGroup("Select Data/State")]
         [HorizontalGroup("Select Data/State/")]
         [LabelText("State Name")]
@@ -256,7 +257,7 @@ namespace StateController
         private string m_EditorNewStateName;
 
         [BoxGroup("Select Data/State")]
-        [HorizontalGroup("Select Data/State/", Width = ConstHorizontalButtonWidth - 5)]
+        [HorizontalGroup("Select Data/State/", Width = ConstHorizontalButtonWidth - 5f)]
         [GUIColor(0,1,0)]
         [Button("Add State Name")]
         [PropertyOrder(31)]
