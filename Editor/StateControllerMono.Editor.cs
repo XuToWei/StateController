@@ -92,7 +92,7 @@ namespace StateController
         [ShowInInspector]
         [InfoBox("Data name already exists!", 
             InfoMessageType.Warning,
-            "EditorShowNewDataNameInfo")]
+            nameof(EditorShowNewDataNameInfo))]
         private string m_EditorNewDataName;
 
         [BoxGroup("Add Data")]
@@ -100,7 +100,7 @@ namespace StateController
         [GUIColor(0, 1, 0)]
         [Button("Add Data")]
         [PropertyOrder(11)]
-        [EnableIf("EditorCheckCanAddData")]
+        [EnableIf(nameof(EditorCheckCanAddData))]
         private void EditorAddNewData()
         {
             if (!EditorCheckCanAddData())
@@ -118,8 +118,8 @@ namespace StateController
         [LabelText("Data Name")]
         [PropertyOrder(20)]
         [ShowInInspector]
-        [ValueDropdown("EditorGetAllDataNames")]
-        [OnValueChanged("EditorRefreshSelectedStatesRenameDatas", InvokeOnInitialize = true)]
+        [ValueDropdown(nameof(EditorGetAllDataNames))]
+        [OnValueChanged(nameof(EditorRefreshSelectedStatesRenameDatas), InvokeOnInitialize = true)]
         [SerializeField]
         private string m_EditorSelectedDataName = string.Empty;
 
@@ -130,7 +130,7 @@ namespace StateController
         [GUIColor(0,1,0)]
         [Button("Copy")]
         [PropertyOrder(21)]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         private void EditorCopySelectedData()
         {
             TextEditor.text = JsonUtility.ToJson(EditorSelectedData);
@@ -141,7 +141,7 @@ namespace StateController
         [GUIColor(1,1,0)]
         [Button("Paste")]
         [PropertyOrder(22)]
-        [EnableIf("EditorCanPasteSelectedData")]
+        [EnableIf(nameof(EditorCanPasteSelectedData))]
         private void EditorPasteSelectedData()
         {
             var selectedData = EditorSelectedData;
@@ -179,7 +179,7 @@ namespace StateController
         [GUIColor(1,0,0)]
         [Button("X")]
         [PropertyOrder(23)]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         private void EditorRemoveSelectedData()
         {
             var datas = EditorControllerDatas;
@@ -203,10 +203,10 @@ namespace StateController
         [LabelText("Rename")]
         [PropertyOrder(24)]
         [ShowInInspector]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         [InfoBox("Data name already exists!", 
             InfoMessageType.Warning,
-            "EditorShowRenameDataNameInfo")]
+            nameof(EditorShowRenameDataNameInfo))]
         private string m_EditorRenameDataName;
 
         [BoxGroup("Select Data")]
@@ -214,7 +214,7 @@ namespace StateController
         [GUIColor(0,1,0)]
         [Button("Rename")]
         [PropertyOrder(25)]
-        [EnableIf("EditorCheckCanRenameData")]
+        [EnableIf(nameof(EditorCheckCanRenameData))]
         private void EditorRenameSelectedDataName()
         {
             if (string.IsNullOrEmpty(m_EditorRenameDataName))
@@ -250,10 +250,10 @@ namespace StateController
         [LabelText("State Name")]
         [PropertyOrder(30)]
         [ShowInInspector]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         [InfoBox("State name already exists!", 
             InfoMessageType.Warning,
-            "EditorShowNewStateNameInfo")]
+            nameof(EditorShowNewStateNameInfo))]
         private string m_EditorNewStateName;
 
         [BoxGroup("Select Data/State")]
@@ -261,7 +261,7 @@ namespace StateController
         [GUIColor(0,1,0)]
         [Button("Add State Name")]
         [PropertyOrder(31)]
-        [EnableIf("EditorCheckCanAddStateName")]
+        [EnableIf(nameof(EditorCheckCanAddStateName))]
         private void EditorAddStateName()
         {
             if(!EditorCheckCanAddStateName())
@@ -283,10 +283,10 @@ namespace StateController
         [PropertyOrder(32)]
         [ShowInInspector]
         [ReadOnly]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         [ListDrawerSettings(DefaultExpandedState = true,
-            OnBeginListElementGUI = "EditorOnStateNameBeginGUI",
-            OnEndListElementGUI = "EditorOnStateNameEndGUI")]
+            OnBeginListElementGUI = nameof(EditorOnStateNameBeginGUI),
+            OnEndListElementGUI = nameof(EditorOnStateNameEndGUI))]
         private List<string> EditorSelectedStateNames
         {
             get
@@ -307,7 +307,7 @@ namespace StateController
         [ShowInInspector]
         [ReadOnly]
         [ListDrawerSettings]
-        [EnableIf("EditorIsSelectedData")]
+        [EnableIf(nameof(EditorIsSelectedData))]
         private List<BaseState> EditorSelectedStates
         {
             get

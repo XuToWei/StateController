@@ -12,8 +12,8 @@ namespace StateController
         [BoxGroup("Data1")]
         [LabelText("Data Name")]
         [PropertyOrder(10)]
-        [ValueDropdown("EditorGetDataNames1")]
-        [OnValueChanged("EditorOnSelectedData1")]
+        [ValueDropdown(nameof(EditorGetDataNames1))]
+        [OnValueChanged(nameof(EditorOnSelectedData1))]
         private string EditorDataName1
         {
             get => m_DataName1;
@@ -24,13 +24,13 @@ namespace StateController
         [BoxGroup("Data1")]
         [LabelText("State Datas")]
         [PropertyOrder(11)]
-        [ShowIf("EditorIsSelectedData1")]
+        [ShowIf(nameof(EditorIsSelectedData1))]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = "EditorOnStateDataBeginGUI1",
-            OnEndListElementGUI = "EditorOnStateDataEndGUI1")]
-        [OnValueChanged("EditorRefreshSelectedName", true)]
+            OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI1),
+            OnEndListElementGUI = nameof(EditorOnStateDataEndGUI1))]
+        [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
         private List<bool> EditorStateDatas1
         {
             set => m_StateDatas1 = value;
@@ -39,7 +39,7 @@ namespace StateController
 
         [ShowInInspector]
         [PropertyOrder(20)]
-        [OnValueChanged("EditorRefreshSelectedName")]
+        [OnValueChanged(nameof(EditorRefreshSelectedName))]
         public BooleanLogicType EditorBooleanLogicType
         {
             get => m_BooleanLogicType;
@@ -50,9 +50,9 @@ namespace StateController
         [BoxGroup("Data2")]
         [LabelText("Data Name")]
         [PropertyOrder(30)]
-        [EnableIf("EditorCanShowData2")]
-        [ValueDropdown("EditorGetDataNames2")]
-        [OnValueChanged("EditorOnSelectedData2")]
+        [EnableIf(nameof(EditorCanShowData2))]
+        [ValueDropdown(nameof(EditorGetDataNames2))]
+        [OnValueChanged(nameof(EditorOnSelectedData2))]
         private string EditorDataName2
         {
             get => m_DataName2;
@@ -63,14 +63,14 @@ namespace StateController
         [BoxGroup("Data2")]
         [LabelText("State Datas")]
         [PropertyOrder(31)]
-        [EnableIf("EditorCanShowData2")]
-        [ShowIf("EditorIsSelectedData2")]
+        [EnableIf(nameof(EditorCanShowData2))]
+        [ShowIf(nameof(EditorIsSelectedData2))]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = "EditorOnStateDataBeginGUI2",
-            OnEndListElementGUI = "EditorOnStateDataEndGUI2")]
-        [OnValueChanged("EditorRefreshSelectedName", true)]
+            OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI2),
+            OnEndListElementGUI = nameof(EditorOnStateDataEndGUI2))]
+        [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
         private List<bool> EditorStateDatas2
         {
             set => m_StateDatas2 = value;

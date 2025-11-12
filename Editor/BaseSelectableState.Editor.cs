@@ -53,8 +53,8 @@ namespace StateController
         [BoxGroup("Data")]
         [LabelText("Data Name")]
         [PropertyOrder(10)]
-        [ValueDropdown("EditorGetDataNames")]
-        [OnValueChanged("EditorOnSelectedData")]
+        [ValueDropdown(nameof(EditorGetDataNames))]
+        [OnValueChanged(nameof(EditorOnSelectedData))]
         private string EditorDataName
         {
             get => m_DataName;
@@ -66,13 +66,13 @@ namespace StateController
         [BoxGroup("Data")]
         [LabelText("State Datas")]
         [PropertyOrder(11)]
-        [ShowIf("EditorIsSelectedData")]
+        [ShowIf(nameof(EditorIsSelectedData))]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = "EditorOnStateDataBeginGUI",
-            OnEndListElementGUI = "EditorOnStateDataEndGUI")]
-        [OnValueChanged("EditorRefreshSelectedName", true)]
+            OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI),
+            OnEndListElementGUI = nameof(EditorOnStateDataEndGUI))]
+        [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
         private List<T> EditorStateDatas
         {
             set => m_StateDatas = value;
