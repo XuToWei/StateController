@@ -139,7 +139,7 @@ namespace StateController
             {
                 EditorDataName1 = newDataName;
             }
-            else if (EditorDataName1 == oldDataName)
+            else if (EditorDataName2 == oldDataName)
             {
                 EditorDataName2 = newDataName;
             }
