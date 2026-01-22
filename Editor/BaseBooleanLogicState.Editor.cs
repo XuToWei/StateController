@@ -306,29 +306,7 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI1(int selectionIndex)
         {
-            var controller = EditorControllerMono;
-            if (controller == null)
-            {
-                GUILayout.EndHorizontal();
-                return;
-            }
-            GUI.enabled = false;
-            var data1 = EditorData1;
-            var curStateName = data1.EditorStateNames[selectionIndex];
-            EditorGUILayout.TextField(curStateName);
-            GUI.enabled = true;
-            var color = GUI.color;
-            if (data1.EditorSelectedName == curStateName)
-            {
-                GUI.color = new Color(0,1,0);
-            }
-            if (GUILayout.Button("Apply"))
-            {
-                controller.EditorRefresh();
-                data1.EditorSelectedName = curStateName;
-            }
-            GUI.color = color;
-            GUILayout.EndHorizontal();
+            EditorDrawStateDataEndGUI(EditorData1, selectionIndex);
         }
 
         private void EditorOnStateDataBeginGUI2(int selectionIndex)
@@ -338,6 +316,11 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI2(int selectionIndex)
         {
+            EditorDrawStateDataEndGUI(EditorData2, selectionIndex);
+        }
+
+        private void EditorDrawStateDataEndGUI(StateControllerData data, int selectionIndex)
+        {
             var controller = EditorControllerMono;
             if (controller == null)
             {
@@ -345,19 +328,18 @@ namespace StateController
                 return;
             }
             GUI.enabled = false;
-            var data2 = EditorData2;
-            var curStateName = data2.EditorStateNames[selectionIndex];
+            var curStateName = data.EditorStateNames[selectionIndex];
             EditorGUILayout.TextField(curStateName);
             GUI.enabled = true;
             var color = GUI.color;
-            if (data2.EditorSelectedName == curStateName)
+            if (data.EditorSelectedName == curStateName)
             {
-                GUI.color = new Color(0,1,0);
+                GUI.color = new Color(0, 1, 0);
             }
             if (GUILayout.Button("Apply"))
             {
                 controller.EditorRefresh();
-                data2.EditorSelectedName = curStateName;
+                data.EditorSelectedName = curStateName;
             }
             GUI.color = color;
             GUILayout.EndHorizontal();

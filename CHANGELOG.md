@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.7] - 2025-01-22
+- 重构 StateControllerData 状态切换逻辑，提取公共方法
+- 优化 BaseBooleanLogicState 编辑器代码，减少重复
+- 完善 README 文档，添加详细使用说明和 API 示例
+
 ## [1.0.6] - 2024-12-11
 - 优化编辑器布局
 - 添加复制粘贴功能
