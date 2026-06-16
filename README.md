@@ -118,7 +118,7 @@ data.OnSelectedIndexChanged += (index) => Debug.Log($"Index changed to: {index}"
 
 ## 依赖
 
-- Unity 2019.4+
+- Unity 2020.1+（状态数据使用泛型序列化，需 2020.1 及以上）
 - [Odin Inspector](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041)（收费插件，请自行购买安装）
 
 ## 许可证

@@ -65,7 +65,7 @@ namespace StateController
         [HideReferenceObjectPicker]
         [ShowInInspector]
         [BoxGroup("Data")]
-        [LabelText("State Datas")]
+        [LabelText("State Values")]
         [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(11)]
         [ShowIf(nameof(EditorIsSelectedData))]
@@ -75,7 +75,7 @@ namespace StateController
             OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI),
             OnEndListElementGUI = nameof(EditorOnStateDataEndGUI))]
         [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
-        private List<StateValue<T>> EditorStateDatas
+        private List<StateValue<T>> EditorStateValues
         {
             set => m_StateValues = value;
             get => m_StateValues;
@@ -96,7 +96,7 @@ namespace StateController
             var data = EditorData;
             if (data == null || string.IsNullOrEmpty(data.EditorSelectedName))
                 return;
-            foreach (var stateValue in EditorStateDatas)
+            foreach (var stateValue in EditorStateValues)
             {
                 if (stateValue.EditorStateName == data.EditorSelectedName)
                 {
@@ -118,7 +118,7 @@ namespace StateController
         {
             if (EditorDataName != dataName)
                 return;
-            foreach (var stateData in EditorStateDatas)
+            foreach (var stateData in EditorStateValues)
             {
                 if (stateData.EditorStateName == oldStateName)
                 {
@@ -140,16 +140,16 @@ namespace StateController
             var data = EditorData;
             if (data == null)
             {
-                EditorStateDatas.Clear();
+                EditorStateValues.Clear();
                 return;
             }
             var states = data.EditorStates;
-            if (EditorStateDatas.Count == states.Count)
+            if (EditorStateValues.Count == states.Count)
             {
                 bool match = true;
                 for (int i = 0; i < states.Count; i++)
                 {
-                    if (EditorStateDatas[i].EditorStateName != states[i].EditorName)
+                    if (EditorStateValues[i].EditorStateName != states[i].EditorName)
                     {
                         match = false;
                         break;
@@ -164,7 +164,7 @@ namespace StateController
             {
                 var stateName = states[i].EditorName;
                 T value = canCreate ? Activator.CreateInstance<T>() : default;
-                foreach (var stateValue in EditorStateDatas)
+                foreach (var stateValue in EditorStateValues)
                 {
                     if (stateValue.EditorStateName == stateName)
                     {
@@ -174,8 +174,8 @@ namespace StateController
                 }
                 m_EditorTempDatas.Add(new StateValue<T> { EditorStateName = stateName, EditorValue = value });
             }
-            EditorStateDatas.Clear();
-            EditorStateDatas.AddRange(m_EditorTempDatas);
+            EditorStateValues.Clear();
+            EditorStateValues.AddRange(m_EditorTempDatas);
             m_EditorTempDatas.Clear();
         }
 
@@ -230,13 +230,13 @@ namespace StateController
         {
             var controller = EditorControllerMono;
             var data = EditorData;
-            if (controller == null || data == null || selectionIndex >= EditorStateDatas.Count)
+            if (controller == null || data == null || selectionIndex >= EditorStateValues.Count)
             {
                 GUILayout.EndHorizontal();
                 return;
             }
             GUI.enabled = false;
-            var curStateName = EditorStateDatas[selectionIndex].EditorStateName;
+            var curStateName = EditorStateValues[selectionIndex].EditorStateName;
             var nameColor = GUI.color;
             GUI.color = new Color(1f, 0.82f, 0.45f);
             if (NameWidth > 0)
