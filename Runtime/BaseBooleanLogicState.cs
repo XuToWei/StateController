@@ -11,7 +11,7 @@ namespace StateController
 
         [HideInInspector]
         [SerializeField]
-        private List<bool> m_StateDatas1 = new List<bool>();
+        private List<StateValue<bool>> m_StateValues1 = new List<StateValue<bool>>();
 
         [HideInInspector]
         [SerializeField]
@@ -23,12 +23,10 @@ namespace StateController
 
         [HideInInspector]
         [SerializeField]
-        private List<bool> m_StateDatas2 = new List<bool>();
+        private List<StateValue<bool>> m_StateValues2 = new List<StateValue<bool>>();
 
         private string m_CurStateName1;
         private string m_CurStateName2;
-        private readonly Dictionary<string, bool> m_StateDataDict1 = new Dictionary<string, bool>();
-        private readonly Dictionary<string, bool> m_StateDataDict2 = new Dictionary<string, bool>();
         private StateControllerData m_Data1;
         private StateControllerData m_Data2;
 
@@ -36,25 +34,9 @@ namespace StateController
         {
             OnStateInit();
             m_Data1 = controllerMono.GetData(m_DataName1);
-            if (m_Data1 != null)
-            {
-                m_StateDataDict1.Clear();
-                for (int i = 0; i < m_Data1.StateNames.Count; i++)
-                {
-                    m_StateDataDict1.Add(m_Data1.StateNames[i], m_StateDatas1[i]);
-                }
-            }
             if (m_BooleanLogicType != BooleanLogicType.None)
             {
                 m_Data2 = controllerMono.GetData(m_DataName2);
-                if (m_Data2 != null)
-                {
-                    m_StateDataDict2.Clear();
-                    for (int i = 0; i < m_Data2.StateNames.Count; i++)
-                    {
-                        m_StateDataDict2.Add(m_Data2.StateNames[i], m_StateDatas2[i]);
-                    }
-                }
             }
         }
 
@@ -67,7 +49,14 @@ namespace StateController
                 if (m_Data1.SelectedName == m_CurStateName1)
                     return;
                 m_CurStateName1 = m_Data1.SelectedName;
-                OnStateChanged(m_StateDataDict1[m_CurStateName1]);
+                foreach (var stateValue in m_StateValues1)
+                {
+                    if (stateValue.StateName == m_CurStateName1)
+                    {
+                        OnStateChanged(stateValue.Value);
+                        break;
+                    }
+                }
             }
             else
             {
@@ -79,14 +68,32 @@ namespace StateController
                     return;
                 m_CurStateName1 = m_Data1.SelectedName;
                 m_CurStateName2 = m_Data2.SelectedName;
+                bool value1 = false;
+                foreach (var stateValue in m_StateValues1)
+                {
+                    if (stateValue.StateName == m_CurStateName1)
+                    {
+                        value1 = stateValue.Value;
+                        break;
+                    }
+                }
+                bool value2 = false;
+                foreach (var stateValue in m_StateValues2)
+                {
+                    if (stateValue.StateName == m_CurStateName2)
+                    {
+                        value2 = stateValue.Value;
+                        break;
+                    }
+                }
                 bool logicResult = false;
                 switch (m_BooleanLogicType)
                 {
                     case BooleanLogicType.And:
-                        logicResult = m_StateDataDict1[m_CurStateName1] && m_StateDataDict2[m_CurStateName2];
+                        logicResult = value1 && value2;
                         break;
                     case BooleanLogicType.Or:
-                        logicResult = m_StateDataDict1[m_CurStateName1] || m_StateDataDict2[m_CurStateName2];
+                        logicResult = value1 || value2;
                         break;
                 }
                 OnStateChanged(logicResult);

@@ -11,24 +11,15 @@ namespace StateController
 
         [HideInInspector]
         [SerializeField]
-        private List<T> m_StateDatas = new List<T>();
+        private List<StateValue<T>> m_StateValues = new List<StateValue<T>>();
 
         private string m_CurStateName;
-        private Dictionary<string, T> m_StateDataDict = new Dictionary<string, T>();
         private StateControllerData m_Data;
 
         internal override void OnInit(StateControllerMono controllerMono)
         {
             OnStateInit();
             m_Data = controllerMono.GetData(m_DataName);
-            if (m_Data != null)
-            {
-                m_StateDataDict.Clear();
-                for (int i = 0; i < m_Data.StateNames.Count; i++)
-                {
-                    m_StateDataDict.Add(m_Data.StateNames[i], m_StateDatas[i]);
-                }
-            }
         }
 
         internal override void OnRefresh()
@@ -38,7 +29,14 @@ namespace StateController
             if (m_CurStateName == m_Data.SelectedName)
                 return;
             m_CurStateName = m_Data.SelectedName;
-            OnStateChanged(m_StateDataDict[m_Data.SelectedName]);
+            foreach (var stateValue in m_StateValues)
+            {
+                if (stateValue.StateName == m_CurStateName)
+                {
+                    OnStateChanged(stateValue.Value);
+                    break;
+                }
+            }
         }
 
         protected abstract void OnStateInit();

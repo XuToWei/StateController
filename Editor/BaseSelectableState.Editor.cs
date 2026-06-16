@@ -52,6 +52,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data")]
         [LabelText("Data Name")]
+        [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(10)]
         [ValueDropdown(nameof(EditorGetDataNames))]
         [OnValueChanged(nameof(EditorOnSelectedData))]
@@ -65,6 +66,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data")]
         [LabelText("State Datas")]
+        [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(11)]
         [ShowIf(nameof(EditorIsSelectedData))]
         [ListDrawerSettings(DefaultExpandedState = true,
@@ -73,10 +75,10 @@ namespace StateController
             OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI),
             OnEndListElementGUI = nameof(EditorOnStateDataEndGUI))]
         [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
-        private List<T> EditorStateDatas
+        private List<StateValue<T>> EditorStateDatas
         {
-            set => m_StateDatas = value;
-            get => m_StateDatas;
+            set => m_StateValues = value;
+            get => m_StateValues;
         }
 
         private StateControllerData EditorData
@@ -88,18 +90,20 @@ namespace StateController
             }
         }
 
-        internal override void EditorRefresh()
-        {
-            EditorRefreshData();
-        }
-
         internal override void EditorOnRefresh()
         {
             OnStateInit();
             var data = EditorData;
             if (data == null || string.IsNullOrEmpty(data.EditorSelectedName))
                 return;
-            OnStateChanged(EditorStateDatas[data.EditorSelectedIndex]);
+            foreach (var stateValue in EditorStateDatas)
+            {
+                if (stateValue.EditorStateName == data.EditorSelectedName)
+                {
+                    OnStateChanged(stateValue.EditorValue);
+                    break;
+                }
+            }
         }
 
         internal override void EditorOnDataRename(string oldDataName, string newDataName)
@@ -110,19 +114,17 @@ namespace StateController
             }
         }
 
-        internal override void EditorOnDataRemoveState(string dataName, int index)
+        internal override void EditorOnDataStateRename(string dataName, string oldStateName, string newStateName)
         {
-            if (EditorDataName == dataName)
+            if (EditorDataName != dataName)
+                return;
+            foreach (var stateData in EditorStateDatas)
             {
-                EditorStateDatas.RemoveAt(index);
-            }
-        }
-
-        internal override void EditorOnDataSwitchState(string dataName, int index1, int index2)
-        {
-            if (EditorDataName == dataName)
-            {
-                (EditorStateDatas[index1], EditorStateDatas[index2]) = (EditorStateDatas[index2], EditorStateDatas[index1]);
+                if (stateData.EditorStateName == oldStateName)
+                {
+                    stateData.EditorStateName = newStateName;
+                    break;
+                }
             }
         }
 
@@ -131,32 +133,50 @@ namespace StateController
             return EditorDataName == data.EditorName;
         }
 
-        private void EditorRefreshData()
+        // 按名字对齐重建本组件存的（状态名,值），处理控制器状态的新增/删除/重排
+        private readonly List<StateValue<T>> m_EditorTempDatas = new List<StateValue<T>>();
+        internal override void EditorRefresh()
         {
             var data = EditorData;
-            if (data != null)
-            {
-                bool canCreate = typeof(T).GetConstructor(Type.EmptyTypes) != null;
-                for (int i = EditorStateDatas.Count; i < data.EditorStateNames.Count; i++)
-                {
-                    if (canCreate)
-                    {
-                        EditorStateDatas.Add(Activator.CreateInstance<T>());
-                    }
-                    else
-                    {
-                        EditorStateDatas.Add(default);
-                    }
-                }
-                for (int i = EditorStateDatas.Count - 1; i >= data.EditorStateNames.Count; i--)
-                {
-                    EditorStateDatas.RemoveAt(i);
-                }
-            }
-            else
+            if (data == null)
             {
                 EditorStateDatas.Clear();
+                return;
             }
+            var states = data.EditorStates;
+            if (EditorStateDatas.Count == states.Count)
+            {
+                bool match = true;
+                for (int i = 0; i < states.Count; i++)
+                {
+                    if (EditorStateDatas[i].EditorStateName != states[i].EditorName)
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match)
+                    return;
+            }
+            bool canCreate = typeof(T).GetConstructor(Type.EmptyTypes) != null;
+            m_EditorTempDatas.Clear();
+            for (int i = 0; i < states.Count; i++)
+            {
+                var stateName = states[i].EditorName;
+                T value = canCreate ? Activator.CreateInstance<T>() : default;
+                foreach (var stateValue in EditorStateDatas)
+                {
+                    if (stateValue.EditorStateName == stateName)
+                    {
+                        value = stateValue.EditorValue;
+                        break;
+                    }
+                }
+                m_EditorTempDatas.Add(new StateValue<T> { EditorStateName = stateName, EditorValue = value });
+            }
+            EditorStateDatas.Clear();
+            EditorStateDatas.AddRange(m_EditorTempDatas);
+            m_EditorTempDatas.Clear();
         }
 
         private readonly List<string> m_EmptyListString = new List<string>();
@@ -177,7 +197,7 @@ namespace StateController
 
         private void EditorOnSelectedData()
         {
-            EditorRefreshData();
+            EditorRefresh();
         }
         
         private void EditorRefreshSelectedName()
@@ -209,14 +229,16 @@ namespace StateController
         private void EditorOnStateDataTitleGUI(int selectionIndex)
         {
             var controller = EditorControllerMono;
-            if (controller == null)
+            var data = EditorData;
+            if (controller == null || data == null || selectionIndex >= EditorStateDatas.Count)
             {
                 GUILayout.EndHorizontal();
                 return;
             }
             GUI.enabled = false;
-            var data = EditorData;
-            var curStateName = data.EditorStateNames[selectionIndex];
+            var curStateName = EditorStateDatas[selectionIndex].EditorStateName;
+            var nameColor = GUI.color;
+            GUI.color = new Color(1f, 0.82f, 0.45f);
             if (NameWidth > 0)
             {
                 EditorGUILayout.TextField(curStateName, GUILayout.Width(NameWidth));
@@ -225,6 +247,7 @@ namespace StateController
             {
                 EditorGUILayout.TextField(curStateName);
             }
+            GUI.color = nameColor;
             GUI.enabled = true;
             var color = GUI.color;
             if (data.EditorSelectedName == curStateName)

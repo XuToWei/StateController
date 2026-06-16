@@ -89,7 +89,13 @@ namespace StateController
             var data = GetData(dataName);
             if (data != null)
             {
-                return data.StateNames.ToArray();
+                var states = data.States;
+                var names = new string[states.Count];
+                for (int i = 0; i < names.Length; i++)
+                {
+                    names[i] = states[i].Name;
+                }
+                return names;
             }
             return null;
         }
@@ -104,7 +110,10 @@ namespace StateController
             var data = GetData(dataName);
             if (data != null)
             {
-                results.AddRange(data.StateNames);
+                foreach (var state in data.States)
+                {
+                    results.Add(state.Name);
+                }
             }
         }
 

@@ -11,6 +11,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data1")]
         [LabelText("Data Name")]
+        [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(10)]
         [ValueDropdown(nameof(EditorGetDataNames1))]
         [OnValueChanged(nameof(EditorOnSelectedData1))]
@@ -23,18 +24,20 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data1")]
         [LabelText("State Datas")]
+        [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(11)]
         [ShowIf(nameof(EditorIsSelectedData1))]
+        [HideReferenceObjectPicker]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
             OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI1),
             OnEndListElementGUI = nameof(EditorOnStateDataEndGUI1))]
         [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
-        private List<bool> EditorStateDatas1
+        private List<StateValue<bool>> EditorStateDatas1
         {
-            set => m_StateDatas1 = value;
-            get => m_StateDatas1;
+            set => m_StateValues1 = value;
+            get => m_StateValues1;
         }
 
         [ShowInInspector]
@@ -49,6 +52,7 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data2")]
         [LabelText("Data Name")]
+        [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(30)]
         [EnableIf(nameof(EditorCanShowData2))]
         [ValueDropdown(nameof(EditorGetDataNames2))]
@@ -62,19 +66,21 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data2")]
         [LabelText("State Datas")]
+        [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(31)]
         [EnableIf(nameof(EditorCanShowData2))]
         [ShowIf(nameof(EditorIsSelectedData2))]
+        [HideReferenceObjectPicker]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true, HideRemoveButton = true,
             DraggableItems = false,
             OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI2),
             OnEndListElementGUI = nameof(EditorOnStateDataEndGUI2))]
         [OnValueChanged(nameof(EditorRefreshSelectedName), true)]
-        private List<bool> EditorStateDatas2
+        private List<StateValue<bool>> EditorStateDatas2
         {
-            set => m_StateDatas2 = value;
-            get => m_StateDatas2;
+            set => m_StateValues2 = value;
+            get => m_StateValues2;
         }
 
         private StateControllerData EditorData1
@@ -109,7 +115,14 @@ namespace StateController
                 var data1 = EditorData1;
                 if (data1 == null || string.IsNullOrEmpty(data1.EditorSelectedName))
                     return;
-                OnStateChanged(EditorStateDatas1[data1.EditorSelectedIndex]);
+                foreach (var stateValue in EditorStateDatas1)
+                {
+                    if (stateValue.EditorStateName == data1.EditorSelectedName)
+                    {
+                        OnStateChanged(stateValue.EditorValue);
+                        break;
+                    }
+                }
             }
             else
             {
@@ -119,14 +132,32 @@ namespace StateController
                 var data2 = EditorData2;
                 if (data2 == null || string.IsNullOrEmpty(data2.EditorSelectedName))
                     return;
+                bool value1 = false;
+                foreach (var stateValue in EditorStateDatas1)
+                {
+                    if (stateValue.EditorStateName == data1.EditorSelectedName)
+                    {
+                        value1 = stateValue.EditorValue;
+                        break;
+                    }
+                }
+                bool value2 = false;
+                foreach (var stateValue in EditorStateDatas2)
+                {
+                    if (stateValue.EditorStateName == data2.EditorSelectedName)
+                    {
+                        value2 = stateValue.EditorValue;
+                        break;
+                    }
+                }
                 bool logicResult = false;
                 switch (EditorBooleanLogicType)
                 {
                     case BooleanLogicType.And:
-                        logicResult = EditorStateDatas1[data1.EditorSelectedIndex] && EditorStateDatas2[data2.EditorSelectedIndex];
+                        logicResult = value1 && value2;
                         break;
                     case BooleanLogicType.Or:
-                        logicResult = EditorStateDatas1[data1.EditorSelectedIndex] || EditorStateDatas2[data2.EditorSelectedIndex];
+                        logicResult = value1 || value2;
                         break;
                 }
                 OnStateChanged(logicResult);
@@ -145,27 +176,27 @@ namespace StateController
             }
         }
 
-        internal override void EditorOnDataRemoveState(string dataName, int index)
+        internal override void EditorOnDataStateRename(string dataName, string oldStateName, string newStateName)
         {
             if (EditorDataName1 == dataName)
             {
-                EditorStateDatas1.RemoveAt(index);
+                EditorRenameStateData(EditorStateDatas1, oldStateName, newStateName);
             }
-            else if (EditorDataName2 == dataName)
+            if (EditorDataName2 == dataName)
             {
-                EditorStateDatas2.RemoveAt(index);
+                EditorRenameStateData(EditorStateDatas2, oldStateName, newStateName);
             }
         }
 
-        internal override void EditorOnDataSwitchState(string dataName, int index1, int index2)
+        private static void EditorRenameStateData(List<StateValue<bool>> datas, string oldStateName, string newStateName)
         {
-            if (EditorDataName1 == dataName)
+            foreach (var data in datas)
             {
-                (EditorStateDatas1[index1], EditorStateDatas1[index2]) = (EditorStateDatas1[index2], EditorStateDatas1[index1]);
-            }
-            else if (EditorDataName2 == dataName)
-            {
-                (EditorStateDatas2[index1], EditorStateDatas2[index2]) = (EditorStateDatas2[index2], EditorStateDatas2[index1]);
+                if (data.EditorStateName == oldStateName)
+                {
+                    data.EditorStateName = newStateName;
+                    break;
+                }
             }
         }
 
@@ -219,43 +250,64 @@ namespace StateController
         private void EditorRefreshData1()
         {
             var data1 = EditorData1;
-            if (data1 != null)
-            {
-                for (int i = EditorStateDatas1.Count; i < data1.EditorStateNames.Count; i++)
-                {
-                    EditorStateDatas1.Add(default);
-                }
-                for (int i = EditorStateDatas1.Count - 1; i >= data1.EditorStateNames.Count; i--)
-                {
-                    EditorStateDatas1.RemoveAt(i);
-                }
-            }
-            else
+            if (data1 == null)
             {
                 EditorDataName1 = string.Empty;
                 EditorStateDatas1.Clear();
+                return;
             }
+            EditorAlignOne(data1, EditorStateDatas1);
         }
 
         private void EditorRefreshData2()
         {
             var data2 = EditorData2;
-            if (data2 != null)
-            {
-                for (int i = EditorStateDatas2.Count; i < data2.EditorStateNames.Count; i++)
-                {
-                    EditorStateDatas2.Add(default);
-                }
-                for (int i = EditorStateDatas2.Count - 1; i >= data2.EditorStateNames.Count; i--)
-                {
-                    EditorStateDatas2.RemoveAt(i);
-                }
-            }
-            else
+            if (data2 == null)
             {
                 EditorDataName2 = string.Empty;
                 EditorStateDatas2.Clear();
+                return;
             }
+            EditorAlignOne(data2, EditorStateDatas2);
+        }
+
+        // 把每条（名字,值）数据按 data 的当前状态顺序重建，按名字保留已有值、缺补默认、多删
+        private readonly List<StateValue<bool>> m_EditorTempDatas = new List<StateValue<bool>>();
+        private void EditorAlignOne(StateControllerData data, List<StateValue<bool>> datas)
+        {
+            var states = data.EditorStates;
+            if (datas.Count == states.Count)
+            {
+                bool match = true;
+                for (int i = 0; i < states.Count; i++)
+                {
+                    if (datas[i].EditorStateName != states[i].EditorName)
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match)
+                    return;
+            }
+            m_EditorTempDatas.Clear();
+            for (int i = 0; i < states.Count; i++)
+            {
+                var stateName = states[i].EditorName;
+                bool value = false;
+                foreach (var stateValue in datas)
+                {
+                    if (stateValue.EditorStateName == stateName)
+                    {
+                        value = stateValue.EditorValue;
+                        break;
+                    }
+                }
+                m_EditorTempDatas.Add(new StateValue<bool> { EditorStateName = stateName, EditorValue = value });
+            }
+            datas.Clear();
+            datas.AddRange(m_EditorTempDatas);
+            m_EditorTempDatas.Clear();
         }
 
         private void EditorOnSelectedData1()
@@ -306,7 +358,7 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI1(int selectionIndex)
         {
-            EditorDrawStateDataEndGUI(EditorData1, selectionIndex);
+            EditorDrawStateDataEndGUI(EditorData1, EditorStateDatas1, selectionIndex);
         }
 
         private void EditorOnStateDataBeginGUI2(int selectionIndex)
@@ -316,20 +368,25 @@ namespace StateController
 
         private void EditorOnStateDataEndGUI2(int selectionIndex)
         {
-            EditorDrawStateDataEndGUI(EditorData2, selectionIndex);
+            EditorDrawStateDataEndGUI(EditorData2, EditorStateDatas2, selectionIndex);
         }
 
-        private void EditorDrawStateDataEndGUI(StateControllerData data, int selectionIndex)
+        private void EditorDrawStateDataEndGUI(StateControllerData data, List<StateValue<bool>> datas, int selectionIndex)
         {
             var controller = EditorControllerMono;
-            if (controller == null)
+            if (controller == null || data == null || selectionIndex >= datas.Count)
             {
                 GUILayout.EndHorizontal();
                 return;
             }
+            // 值开关由 Odin 自动绘制（StateValue<bool> 的 m_Value）
+            // 状态名（只读）
             GUI.enabled = false;
-            var curStateName = data.EditorStateNames[selectionIndex];
+            var curStateName = datas[selectionIndex].EditorStateName;
+            var nameColor = GUI.color;
+            GUI.color = new Color(1f, 0.82f, 0.45f);
             EditorGUILayout.TextField(curStateName);
+            GUI.color = nameColor;
             GUI.enabled = true;
             var color = GUI.color;
             if (data.EditorSelectedName == curStateName)

@@ -212,10 +212,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataName1: B
-  m_StateDatas1: 010100
+  m_StateValues1:
+  - m_StateName: B1
+    m_Value: 1
+  - m_StateName: B2
+    m_Value: 1
+  - m_StateName: B3
+    m_Value: 0
   m_BooleanLogicType: 2
   m_DataName2: C
-  m_StateDatas2: 00010100
+  m_StateValues2:
+  - m_StateName: C1
+    m_Value: 0
+  - m_StateName: C2
+    m_Value: 1
+  - m_StateName: C3
+    m_Value: 1
+  - m_StateName: C4
+    m_Value: 0
 --- !u!1 &766990939
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,10 +319,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataName: B
-  m_StateDatas:
-  - {x: 100, y: 0}
-  - {x: 0, y: 100}
-  - {x: 100, y: 100}
+  m_StateValues:
+  - m_StateName: B1
+    m_Value: {x: 100, y: 0}
+  - m_StateName: B2
+    m_Value: {x: 0, y: 100}
+  - m_StateName: B3
+    m_Value: {x: 100, y: 100}
 --- !u!1 &810017820
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,15 +469,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataName: A
-  m_StateDatas:
-  - m_Sprite: {fileID: 0}
-    m_Color: {r: 1, g: 1, b: 1, a: 1}
-  - m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-    m_Color: {r: 1, g: 0, b: 0, a: 1}
-  - m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-    m_Color: {r: 0.22548595, g: 0.8113208, b: 0, a: 1}
-  - m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-    m_Color: {r: 0.29440176, g: 0.18943575, b: 0.9339623, a: 1}
+  m_StateValues:
+  - m_StateName: A1
+    m_Value:
+      m_Sprite: {fileID: 0}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+  - m_StateName: A2
+    m_Value:
+      m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+      m_Color: {r: 1, g: 0, b: 0, a: 1}
+  - m_StateName: A3
+    m_Value:
+      m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+      m_Color: {r: 0.22548595, g: 0.8113208, b: 0, a: 1}
+  - m_StateName: A4
+    m_Value:
+      m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+      m_Color: {r: 0.29440176, g: 0.18943575, b: 0.9339623, a: 1}
   m_SetNativeSize: 0
 --- !u!114 &872484199
 MonoBehaviour:
@@ -589,11 +614,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataName: A
-  m_StateDatas:
-  - {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 0}
+  m_StateValues:
+  - m_StateName: A1
+    m_Value: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  - m_StateName: A2
+    m_Value: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  - m_StateName: A3
+    m_Value: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  - m_StateName: A4
+    m_Value: {fileID: 0}
   m_SetNativeSize: 0
 --- !u!1 &1154680127
 GameObject:
@@ -808,11 +837,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataName: C
-  m_StateDatas:
-  - C1
-  - C2
-  - C3
-  - C4
+  m_StateValues:
+  - m_StateName: C1
+    m_Value: C1
+  - m_StateName: C2
+    m_Value: C2
+  - m_StateName: C3
+    m_Value: C3
+  - m_StateName: C4
+    m_Value: C4
 --- !u!114 &1682758467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -978,47 +1011,37 @@ MonoBehaviour:
   m_EditorSelectedDataName: A
   m_ControllerDatas:
   - m_Name: A
-    m_StateNames:
-    - A1
-    - A2
-    - A3
-    - A4
-    m_LinkDatas:
-    - m_TargetDataName: C
-      m_TargetSelectedName: C1
-    - m_TargetDataName: C
-      m_TargetSelectedName: C2
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
+    m_States:
+    - m_Name: A1
+      m_Links:
+      - m_TargetDataName: C
+        m_TargetSelectedName: C1
+    - m_Name: A2
+      m_Links:
+      - m_TargetDataName: C
+        m_TargetSelectedName: C2
+    - m_Name: A3
+      m_Links: []
+    - m_Name: A4
+      m_Links: []
   - m_Name: B
-    m_StateNames:
-    - B1
-    - B2
-    - B3
-    m_LinkDatas:
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
+    m_States:
+    - m_Name: B1
+      m_Links: []
+    - m_Name: B2
+      m_Links: []
+    - m_Name: B3
+      m_Links: []
   - m_Name: C
-    m_StateNames:
-    - C1
-    - C2
-    - C3
-    - C4
-    m_LinkDatas:
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
-    - m_TargetDataName: 
-      m_TargetSelectedName: 
+    m_States:
+    - m_Name: C1
+      m_Links: []
+    - m_Name: C2
+      m_Links: []
+    - m_Name: C3
+      m_Links: []
+    - m_Name: C4
+      m_Links: []
 --- !u!222 &2137466423
 CanvasRenderer:
   m_ObjectHideFlags: 0
