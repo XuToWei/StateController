@@ -9,26 +9,6 @@ namespace StateController
 {
     public partial class BaseSelectableState<T>
     {
-        private bool? m_DrawSettingLineBreak;
-        private bool DrawSettingLineBreak
-        {
-            get
-            {
-                if (m_DrawSettingLineBreak.HasValue)
-                {
-                    return m_DrawSettingLineBreak.Value;
-                }
-                m_DrawSettingLineBreak = false;
-                var objects = GetType().GetCustomAttributes(typeof(SelectableStateDrawSettingAttribute), true);
-                if (objects.Length > 0)
-                {
-                    var drawSetting = (SelectableStateDrawSettingAttribute)objects[0];
-                    m_DrawSettingLineBreak = drawSetting.LineBreak;
-                }
-                return m_DrawSettingLineBreak.Value;
-            }
-        }
-
         private float? m_NameWidth;
         private float NameWidth
         {
@@ -66,11 +46,11 @@ namespace StateController
         [ShowInInspector]
         [BoxGroup("Data")]
         [LabelText("State Values")]
-        [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(11)]
         [ShowIf(nameof(EditorIsSelectedData))]
         [ListDrawerSettings(DefaultExpandedState = true,
-            HideAddButton = true, HideRemoveButton = true,
+            HideAddButton = true,
+            HideRemoveButton = true,
             DraggableItems = false,
             OnBeginListElementGUI = nameof(EditorOnStateDataBeginGUI),
             OnEndListElementGUI = nameof(EditorOnStateDataEndGUI))]
@@ -211,32 +191,16 @@ namespace StateController
 
         private void EditorOnStateDataBeginGUI(int selectionIndex)
         {
-            GUILayout.BeginHorizontal();
-            if (DrawSettingLineBreak)
-            {
-                EditorOnStateDataTitleGUI(selectionIndex);
-            }
-        }
-
-        private void EditorOnStateDataEndGUI(int selectionIndex)
-        {
-            if (!DrawSettingLineBreak)
-            {
-                EditorOnStateDataTitleGUI(selectionIndex);
-            }
-        }
-
-        private void EditorOnStateDataTitleGUI(int selectionIndex)
-        {
             var controller = EditorControllerMono;
             var data = EditorData;
-            if (controller == null || data == null || selectionIndex >= EditorStateValues.Count)
+            var stateValues = EditorStateValues;
+            if (controller == null || data == null || selectionIndex >= stateValues.Count)
             {
-                GUILayout.EndHorizontal();
                 return;
             }
+            GUILayout.BeginHorizontal();
             GUI.enabled = false;
-            var curStateName = EditorStateValues[selectionIndex].EditorStateName;
+            var curStateName = stateValues[selectionIndex].EditorStateName;
             var nameColor = GUI.color;
             GUI.color = new Color(1f, 0.82f, 0.45f);
             if (NameWidth > 0)
@@ -249,12 +213,25 @@ namespace StateController
             }
             GUI.color = nameColor;
             GUI.enabled = true;
+        }
+
+        private void EditorOnStateDataEndGUI(int selectionIndex)
+        {
+            var controller = EditorControllerMono;
+            var data = EditorData;
+            var stateValues = EditorStateValues;
+            if (controller == null || data == null || selectionIndex >= stateValues.Count)
+            {
+                return;
+            }
+            GUI.enabled = true;
             var color = GUI.color;
+            var curStateName = stateValues[selectionIndex].EditorStateName;
             if (data.EditorSelectedName == curStateName)
             {
                 GUI.color = new Color(0,1,0);
             }
-            if (GUILayout.Button("Apply"))
+            if (GUILayout.Button("Apply", GUILayout.ExpandWidth(false)))
             {
                 controller.EditorRefresh();
                 data.EditorSelectedName = curStateName;

@@ -5,7 +5,6 @@ namespace StateController
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Image))]
-    // [SelectableStateDrawSetting(true)]
     // [SelectableStateNameWidth(200)]
     public class StateImageForSpriteColor : BaseSelectableState<SpriteColorData>
     {
