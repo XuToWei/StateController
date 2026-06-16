@@ -10,7 +10,7 @@ namespace StateController
     public partial class StateControllerMono
     {
         private const float ConstHorizontalButtonWidth = 110f;
-        
+
         private static TextEditor s_TextEditor;
         private static TextEditor TextEditor
         {
@@ -153,15 +153,13 @@ namespace StateController
             StateControllerData data = JsonUtility.FromJson<StateControllerData>(TextEditor.text);
             selectedData.EditorStates.Clear();
             m_EditorNewStateName = string.Empty;
-            foreach (var state in data.EditorStates)
-            {
-                selectedData.EditorStates.Add(new StateControllerState { EditorName = state.EditorName });
-            }
+            // 直接复用反序列化出来的状态对象（含各自的 link），名字与 link 一并粘贴
+            selectedData.EditorStates.AddRange(data.EditorStates);
             EditorRefresh();
         }
 
         [BoxGroup("Data")]
-        [HorizontalGroup("Data/", Width = 20)]
+        [HorizontalGroup("Data/", Width = 20f)]
         [GUIColor(1, 0, 0)]
         [Button("X")]
         [PropertyOrder(23)]
@@ -185,7 +183,7 @@ namespace StateController
 
         [BoxGroup("Data")]
         [HorizontalGroup("Data/Edit")]
-        [LabelText("Name")]
+        [LabelText("Input Data Name")]
         [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(24)]
         [ShowInInspector]
@@ -273,15 +271,24 @@ namespace StateController
             DraggableItems = true,
             HideAddButton = true,
             HideRemoveButton = true,
-            OnBeginListElementGUI = nameof(EditorOnStateNameBeginGUI),
-            OnEndListElementGUI = nameof(EditorOnStateNameEndGUI))]
-        // 直接用 data.EditorStates（真实列表）：Odin 拖拽即就地重排 m_States，link 随对象一起移动，无需 setter
+            ShowIndexLabels = false,
+            OnEndListElementGUI = nameof(EditorOnStateNameGUI))]
+        // 直接用 data.EditorStates（真实列表），link 随状态对象一起移动；setter 让 Odin 视为可编辑以启用拖拽排序
         private List<StateControllerState> EditorSelectedStates
         {
             get
             {
                 var data = EditorSelectedData;
                 return data == null ? m_EditorEmptyStates : data.EditorStates;
+            }
+            set
+            {
+                var data = EditorSelectedData;
+                if (data == null || ReferenceEquals(value, data.EditorStates))
+                    return;
+                // Odin 传回的是重排后的列表（复用原状态对象，含各自 link），按其顺序回填
+                data.EditorStates.Clear();
+                data.EditorStates.AddRange(value);
             }
         }
 
@@ -423,22 +430,13 @@ namespace StateController
             return true;
         }
 
-        private void EditorOnStateNameBeginGUI(int selectionIndex)
+        private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
+        private void EditorOnStateNameGUI(int selectionIndex)
         {
+            GUI.enabled = true;
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-
-            GUI.enabled = true;
-            float fixedWidth = EditorStyles.label.fixedWidth;
-            GUI.skin.label.fixedWidth = 25;
-            GUILayout.Label(selectionIndex.ToString());
-            GUI.skin.label.fixedWidth = fixedWidth;
-        }
-
-        private readonly string[] m_EditorEmptyStringArray = Array.Empty<string>();
-        private void EditorOnStateNameEndGUI(int selectionIndex)
-        {
-            GUI.enabled = true;
+            GUILayout.Label(selectionIndex.ToString(), GUILayout.Width(25));
             var selectedData = EditorSelectedData;
             if (selectionIndex >= selectedData.EditorStates.Count)
             {
@@ -462,7 +460,7 @@ namespace StateController
                     }
                 }
                 GUI.enabled = !nameExists;
-                if (GUILayout.Button("Rename"))
+                if (GUILayout.Button("Rename", GUILayout.ExpandWidth(false)))
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Change State Name");
                     if (selectedData.EditorSelectedName == curSateName)
@@ -484,7 +482,7 @@ namespace StateController
                     EditorRefresh();
                 }
                 GUI.enabled = true;
-                if (GUILayout.Button("Cancel"))
+                if (GUILayout.Button("Cancel", GUILayout.ExpandWidth(false)))
                 {
                     curState.EditorIsRenaming = false;
                     EditorGUI.FocusTextInControl(null);
@@ -506,7 +504,7 @@ namespace StateController
                 GUI.color = new Color(0, 1, 0);
                 GUI.enabled = false;
             }
-            if (GUILayout.Button("Apply"))
+            if (GUILayout.Button("Apply", GUILayout.ExpandWidth(false)))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Apply State");
                 EditorRefresh();
@@ -514,7 +512,7 @@ namespace StateController
             }
             GUI.enabled = true;
             GUI.color = new Color(1, 0, 0);
-            if (GUILayout.Button("X"))
+            if (GUILayout.Button("X", GUILayout.ExpandWidth(false)))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Remove State");
                 if (selectedData.EditorSelectedName == curSateName)
@@ -529,7 +527,7 @@ namespace StateController
                 return;
             }
             GUI.color = color;
-            if (GUILayout.Button("Rename"))
+            if (GUILayout.Button("Rename", GUILayout.ExpandWidth(false)))
             {
                 curState.EditorIsRenaming = true;
                 curState.EditorRenamingText = curSateName;
@@ -552,7 +550,7 @@ namespace StateController
             {
                 var curLinkData = links[i];
                 GUILayout.BeginHorizontal();
-                GUILayout.Space(30);
+                GUILayout.Space(45);
                 GUILayout.Label("Link", GUILayout.Width(35));
                 // 目标 Data（蓝青标识）
                 GUI.color = new Color(0.6f, 0.8f, 1f);
@@ -604,7 +602,7 @@ namespace StateController
                 GUI.color = defColor;
                 GUI.enabled = true;
                 GUI.color = new Color(1, 0, 0);
-                if (GUILayout.Button("X", GUILayout.Width(25)))
+                if (GUILayout.Button("X", GUILayout.ExpandWidth(false)))
                 {
                     Undo.RegisterCompleteObjectUndo(this, "Remove Link");
                     links.RemoveAt(i);
@@ -626,10 +624,10 @@ namespace StateController
                 }
             }
             GUILayout.BeginHorizontal();
-            GUILayout.Space(30);
+            GUILayout.Space(45);
             GUI.enabled = !hasEmptyLink && EditorGetCanLinkDataNames(selectedData.EditorName, state, null).Length > 0;
             GUI.color = new Color(0, 1, 0);
-            if (GUILayout.Button("+ Add Link", GUILayout.Width(110)))
+            if (GUILayout.Button("+ Add Link", GUILayout.ExpandWidth(false)))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Add Link");
                 state.EditorLinks.Add(new StateControllerStateLink());
