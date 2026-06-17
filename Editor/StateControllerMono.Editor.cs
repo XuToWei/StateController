@@ -44,7 +44,7 @@ namespace StateController
             }
         }
 
-        public List<StateControllerData> EditorControllerDatas => m_ControllerDatas;
+        internal List<StateControllerData> EditorControllerDatas => m_ControllerDatas;
 
         private void OnValidate()
         {
@@ -231,7 +231,7 @@ namespace StateController
 
         [BoxGroup("Data/State")]
         [HorizontalGroup("Data/State/Edit")]
-        [LabelText("New State Name")]
+        [LabelText("Input State Name")]
         [GUIColor(1f, 0.82f, 0.45f)]
         [PropertyOrder(30)]
         [ShowInInspector]
@@ -289,6 +289,7 @@ namespace StateController
                 // Odin 传回的是重排后的列表（复用原状态对象，含各自 link），按其顺序回填
                 data.EditorStates.Clear();
                 data.EditorStates.AddRange(value);
+                EditorRefresh();
             }
         }
 
@@ -511,6 +512,26 @@ namespace StateController
                 selectedData.EditorSelectedName = curSateName;
             }
             GUI.enabled = true;
+            // + Add Link 放在 Apply 和 X 之间，与状态名同一行（不换行）
+            // 已存在未指定目标 data 的空 link 时，不允许再新增
+            bool hasEmptyLink = false;
+            foreach (var link in curState.EditorLinks)
+            {
+                if (string.IsNullOrEmpty(link.EditorTargetDataName))
+                {
+                    hasEmptyLink = true;
+                    break;
+                }
+            }
+            GUI.enabled = !hasEmptyLink && EditorGetCanLinkDataNames(selectedData.EditorName, curState, null).Length > 0;
+            GUI.color = new Color(0, 1, 0);
+            if (GUILayout.Button("+ Add Link", GUILayout.ExpandWidth(false)))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Add Link");
+                curState.EditorLinks.Add(new StateControllerStateLink());
+            }
+            GUI.color = color;
+            GUI.enabled = true;
             GUI.color = new Color(1, 0, 0);
             if (GUILayout.Button("X", GUILayout.ExpandWidth(false)))
             {
@@ -549,8 +570,32 @@ namespace StateController
             for (int i = 0; i < linkCount; i++)
             {
                 var curLinkData = links[i];
+                // 校验 link 的目标 Data 与 State 是否合法，任一非法则 Link 文字变红
+                var linkTargetData = EditorGetData(curLinkData.EditorTargetDataName);
+                bool linkValid = linkTargetData != null;
+                if (linkValid)
+                {
+                    linkValid = false;
+                    foreach (var s in linkTargetData.EditorStates)
+                    {
+                        if (s.EditorName == curLinkData.EditorTargetSelectedName)
+                        {
+                            linkValid = true;
+                            break;
+                        }
+                    }
+                }
                 GUILayout.BeginHorizontal();
-                GUILayout.Space(45);
+                // 非法 link 在前面加一个黄色感叹号图标
+                if (!linkValid)
+                {
+                    GUILayout.Space(25);
+                    GUILayout.Label(EditorGUIUtility.IconContent("console.warnicon.sml"), GUILayout.Width(20), GUILayout.Height(18));
+                }
+                else
+                {
+                    GUILayout.Space(45);
+                }
                 GUILayout.Label("Link", GUILayout.Width(35));
                 // 目标 Data（蓝青标识）
                 GUI.color = new Color(0.6f, 0.8f, 1f);
@@ -613,28 +658,6 @@ namespace StateController
                 GUI.color = defColor;
                 GUILayout.EndHorizontal();
             }
-            // 已存在未指定目标 data 的空 link 时，不允许再新增
-            bool hasEmptyLink = false;
-            foreach (var link in links)
-            {
-                if (string.IsNullOrEmpty(link.EditorTargetDataName))
-                {
-                    hasEmptyLink = true;
-                    break;
-                }
-            }
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(45);
-            GUI.enabled = !hasEmptyLink && EditorGetCanLinkDataNames(selectedData.EditorName, state, null).Length > 0;
-            GUI.color = new Color(0, 1, 0);
-            if (GUILayout.Button("+ Add Link", GUILayout.ExpandWidth(false)))
-            {
-                Undo.RegisterCompleteObjectUndo(this, "Add Link");
-                state.EditorLinks.Add(new StateControllerStateLink());
-            }
-            GUI.color = defColor;
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
         }
 
         private string[] EditorGetCanLinkDataNames(string dataName, StateControllerState state, StateControllerStateLink exceptLink)
