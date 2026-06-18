@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace StateController
 {
@@ -25,7 +26,7 @@ namespace StateController
         }
 
         private readonly List<BaseState> m_EditorStates = new List<BaseState>();
-        internal List<BaseState> EditorStates
+        public List<BaseState> EditorStates
         {
             get
             {
@@ -44,7 +45,7 @@ namespace StateController
             }
         }
 
-        internal List<StateControllerData> EditorControllerDatas => m_ControllerDatas;
+        public List<StateControllerData> EditorDatas => m_Datas;
 
         private void OnValidate()
         {
@@ -59,7 +60,7 @@ namespace StateController
             if (EditorSelectedData == null)
                 return;
             m_EditorLastRefreshFrame = Time.frameCount;
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 data.EditorRefresh(this);
             }
@@ -67,7 +68,7 @@ namespace StateController
             {
                 sate.EditorRefresh();
             }
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 data.EditorRefreshSelectedName();
             }
@@ -75,7 +76,7 @@ namespace StateController
 
         internal StateControllerData EditorGetData(string dateName)
         {
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if (data.EditorName == dateName)
                 {
@@ -97,7 +98,7 @@ namespace StateController
                 return;
             StateControllerData data = new StateControllerData();
             data.EditorName = m_EditorDataNameInput;
-            EditorControllerDatas.Add(data);
+            EditorDatas.Add(data);
             m_EditorSelectedDataName = m_EditorDataNameInput;
             m_EditorDataNameInput = string.Empty;
             EditorRefresh();
@@ -166,7 +167,7 @@ namespace StateController
         [EnableIf(nameof(EditorIsSelectedData))]
         private void EditorRemoveSelectedData()
         {
-            var datas = EditorControllerDatas;
+            var datas = EditorDatas;
             datas.Remove(EditorSelectedData);
             if (datas.Count > 0)
             {
@@ -194,7 +195,6 @@ namespace StateController
 
         [BoxGroup("Data")]
         [HorizontalGroup("Data/Edit", Width = ConstHorizontalButtonWidth * 0.5f)]
-        [GUIColor(0, 1, 0)]
         [Button("Rename")]
         [PropertyOrder(26)]
         [EnableIf(nameof(EditorCheckCanRenameData))]
@@ -205,7 +205,7 @@ namespace StateController
             var selectedData = EditorSelectedData;
             if (m_EditorDataNameInput == selectedData.EditorName)
                 return;
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if(data == selectedData)
                     continue;
@@ -214,7 +214,7 @@ namespace StateController
                     return;
                 }
             }
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if(data == selectedData)
                     continue;
@@ -330,7 +330,7 @@ namespace StateController
         {
             if (string.IsNullOrEmpty(m_EditorDataNameInput))
                 return false;
-            foreach (var subStateController in EditorControllerDatas)
+            foreach (var subStateController in EditorDatas)
             {
                 if (subStateController.EditorName == m_EditorDataNameInput)
                 {
@@ -344,7 +344,7 @@ namespace StateController
         {
             if (string.IsNullOrEmpty(m_EditorDataNameInput))
                 return false;
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if (data.EditorName == m_EditorDataNameInput)
                     return false;
@@ -356,7 +356,7 @@ namespace StateController
         {
             if (string.IsNullOrEmpty(m_EditorSelectedDataName))
                 return false;
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if (data.EditorName == m_EditorSelectedDataName)
                     return true;
@@ -373,7 +373,7 @@ namespace StateController
         public List<string> EditorGetAllDataNames()
         {
             m_EditorControllerNames.Clear();
-            foreach (var controller in EditorControllerDatas)
+            foreach (var controller in EditorDatas)
             {
                 m_EditorControllerNames.Add(controller.EditorName);
             }
@@ -419,7 +419,7 @@ namespace StateController
                 return false;
             if (string.IsNullOrEmpty(m_EditorDataNameInput))
                 return false;
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if(data == selectedData)
                     continue;
@@ -470,7 +470,7 @@ namespace StateController
                     }
                     string newStateName = curState.EditorRenamingText;
                     curState.EditorName = newStateName;
-                    foreach (var data in EditorControllerDatas)
+                    foreach (var data in EditorDatas)
                     {
                         data.EditorOnStateRename(selectedData.EditorName, curSateName, newStateName);
                     }
@@ -489,8 +489,9 @@ namespace StateController
                     EditorGUI.FocusTextInControl(null);
                 }
                 GUILayout.EndHorizontal();
-                // 改名时仍然绘制该状态的 link，保持 link 编辑器内容不变
+                // 改名时仍然绘制该状态的 link、event，保持编辑器内容不变
                 EditorDrawStateLinks(selectedData, selectionIndex);
+                EditorDrawStateOnSelectedEvent(selectedData, selectionIndex);
                 GUILayout.EndVertical();
                 return;
             }
@@ -524,11 +525,21 @@ namespace StateController
                 }
             }
             GUI.enabled = !hasEmptyLink && EditorGetCanLinkDataNames(selectedData.EditorName, curState, null).Length > 0;
-            GUI.color = new Color(0, 1, 0);
-            if (GUILayout.Button("+ Add Link", GUILayout.ExpandWidth(false)))
+            GUI.color = new Color(0.6f, 0.82f, 0.8f);
+            if (GUILayout.Button("Add Link", GUILayout.ExpandWidth(false)))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Add Link");
                 curState.EditorLinks.Add(new StateControllerStateLink());
+            }
+            GUI.color = color;
+            GUI.enabled = true;
+            // Add Event 按钮始终显示；已添加事件（m_OnSelectedEvent 非 null）后置灰不可点击，事件在下方绘制并提供删除按钮（类似 Button 的 onClick）
+            GUI.enabled = curState.EditorOnSelectedEvent == null;
+            GUI.color = new Color(0.95f, 0.7f, 0.65f);
+            if (GUILayout.Button("Add Event", GUILayout.ExpandWidth(false)))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Add Event");
+                curState.EditorOnSelectedEvent = new UnityEvent();
             }
             GUI.color = color;
             GUI.enabled = true;
@@ -557,6 +568,9 @@ namespace StateController
 
             // 竖排展示该状态的多条 link（一对多）
             EditorDrawStateLinks(selectedData, selectionIndex);
+
+            // 展示该状态的可视化 event（单个，类似 Button 的 onClick）
+            EditorDrawStateOnSelectedEvent(selectedData, selectionIndex);
 
             GUILayout.EndVertical();
         }
@@ -660,10 +674,58 @@ namespace StateController
             }
         }
 
+        private void EditorDrawStateOnSelectedEvent(StateControllerData selectedData, int selectionIndex)
+        {
+            var state = selectedData.EditorStates[selectionIndex];
+            // 未添加事件（m_OnSelectedEvent 为 null）则不显示
+            if (state.EditorOnSelectedEvent == null)
+                return;
+            int dataIndex = EditorDatas.IndexOf(selectedData);
+            if (dataIndex < 0)
+                return;
+            var defColor = GUI.color;
+            // 标题行：Event 标签 + 删除按钮
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(45);
+            GUI.color = new Color(0.95f, 0.7f, 0.65f);
+            GUILayout.Label("Event", GUILayout.Width(45));
+            GUILayout.FlexibleSpace();
+            GUI.color = new Color(1, 0, 0);
+            bool remove = GUILayout.Button("X", GUILayout.ExpandWidth(false));
+            GUI.color = defColor;
+            GUILayout.EndHorizontal();
+            if (remove)
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Remove Event");
+                state.EditorOnSelectedEvent = null;
+                return;
+            }
+            // 事件本体：用 SerializedObject 走 Unity 原生 UnityEventDrawer 绘制可视化（对象 + 方法 + 参数）事件
+            // 按字段名逐层导航属性树，避免硬编码 "m_Datas.Array.data[i]..." 字符串路径
+            var serializedObject = new SerializedObject(this);
+            serializedObject.Update();
+            var eventProp = serializedObject
+                .FindProperty(nameof(m_Datas))
+                .GetArrayElementAtIndex(dataIndex)
+                .FindPropertyRelative(StateControllerData.EditorStatesFieldName)
+                .GetArrayElementAtIndex(selectionIndex)
+                .FindPropertyRelative(StateControllerState.EditorOnSelectedEventFieldName);
+            if (eventProp != null)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(45);
+                GUILayout.BeginVertical();
+                EditorGUILayout.PropertyField(eventProp, GUIContent.none, true);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                serializedObject.ApplyModifiedProperties();
+            }
+        }
+
         private string[] EditorGetCanLinkDataNames(string dataName, StateControllerState state, StateControllerStateLink exceptLink)
         {
             var canLinkDataNames = EditorGetAllDataNames();
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 if(data.EditorName == dataName)
                 {
@@ -702,7 +764,7 @@ namespace StateController
         // 切换选中的 Data 时清空各状态的改名编辑态
         private void EditorOnSelectedDataChanged()
         {
-            foreach (var data in EditorControllerDatas)
+            foreach (var data in EditorDatas)
             {
                 foreach (var state in data.EditorStates)
                 {

@@ -8,10 +8,10 @@ namespace StateController
     {
         [HideInInspector]
         [SerializeField]
-        private List<StateControllerData> m_ControllerDatas = new List<StateControllerData>();
+        private List<StateControllerData> m_Datas = new List<StateControllerData>();
 
         private readonly List<BaseState> m_States = new List<BaseState>();
-        public List<BaseState> States => m_States;
+        internal List<BaseState> States => m_States;
 
         private bool m_IsInit;
 
@@ -36,7 +36,7 @@ namespace StateController
                     m_States.RemoveAt(i);
                 }
             }
-            foreach (var data in m_ControllerDatas)
+            foreach (var data in m_Datas)
             {
                 data.OnInit(this);
             }
@@ -120,7 +120,7 @@ namespace StateController
         public StateControllerData GetData(string dateName)
         {
             TryInit();
-            foreach (var data in m_ControllerDatas)
+            foreach (var data in m_Datas)
             {
                 if (data.Name == dateName)
                     return data;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace StateController
 {
@@ -25,8 +26,14 @@ namespace StateController
         [HideInInspector]
         [SerializeField]
         private List<StateControllerStateLink> m_Links = new List<StateControllerStateLink>();
+        // 状态被选中时触发的可视化事件（类似 Button 的 onClick），由 StateControllerMono 编辑器手动绘制
+        // 用 [SerializeReference] 让 m_OnSelectedEvent 可为 null（普通序列化的 UnityEvent 反序列化后必为非空），null 即表示“未添加事件”
+        [HideInInspector]
+        [SerializeReference]
+        private UnityEvent m_OnSelectedEvent;
         public string Name => m_Name;
         public List<StateControllerStateLink> Links => m_Links;
+        public UnityEvent OnSelected => m_OnSelectedEvent;
     }
 
     [Serializable]
@@ -40,7 +47,7 @@ namespace StateController
 
         private string m_SelectedName;
         private int m_SelectedIndex = -1;
-        private StateControllerMono m_ControllerMono;
+        private StateControllerMono m_StateControllerMono;
 
         public string Name => m_Name;
         public Action<string> OnSelectedNameChanged;
@@ -85,17 +92,22 @@ namespace StateController
         {
             m_SelectedName = name;
             m_SelectedIndex = index;
-            foreach (var state in m_ControllerMono.States)
+            foreach (var state in m_StateControllerMono.States)
             {
                 state.OnRefresh();
             }
-            foreach (var link in m_States[index].Links)
+            var curState = m_States[index];
+            foreach (var link in curState.Links)
             {
-                var targetData = m_ControllerMono.GetData(link.TargetDataName);
+                var targetData = m_StateControllerMono.GetData(link.TargetDataName);
                 if (targetData != null && !string.IsNullOrEmpty(link.TargetSelectedName))
                 {
                     targetData.SelectedName = link.TargetSelectedName;
                 }
+            }
+            if (curState.OnSelected != null)
+            {
+                curState.OnSelected.Invoke();
             }
             OnSelectedNameChanged?.Invoke(m_SelectedName);
             OnSelectedIndexChanged?.Invoke(m_SelectedIndex);
@@ -105,7 +117,7 @@ namespace StateController
 
         internal void OnInit(StateControllerMono controllerMono)
         {
-            m_ControllerMono = controllerMono;
+            m_StateControllerMono = controllerMono;
         }
     }
 }

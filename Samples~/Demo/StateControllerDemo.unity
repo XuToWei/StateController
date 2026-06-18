@@ -1009,7 +1009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EditorSelectedDataName: A
-  m_ControllerDatas:
+  m_Datas:
   - m_Name: A
     m_States:
     - m_Name: A1
