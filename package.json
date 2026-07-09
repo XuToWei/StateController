@@ -1,7 +1,7 @@
 {
   "name": "me.xw.statecontroller",
   "version": "1.1.0",
-  "displayName": "StateController",
+  "displayName": "State Controller",
   "description": "A universal state controller for Unity with extensible sub-states",
   "repository": {
       "type": "git",
