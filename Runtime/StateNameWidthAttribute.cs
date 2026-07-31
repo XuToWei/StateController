@@ -4,15 +4,15 @@ using System.Diagnostics;
 namespace StateController
 {
     /// <summary>
-    /// SelectableState名字宽度的特性
+    /// State 名字宽度的特性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     [Conditional("UNITY_EDITOR")]
-    public class SelectableStateNameWidthAttribute : Attribute
+    public class StateNameWidthAttribute : Attribute
     {
         public float Width { get; private set; }
-        
-        public SelectableStateNameWidthAttribute(float width)
+
+        public StateNameWidthAttribute(float width)
         {
             Width = width;
         }

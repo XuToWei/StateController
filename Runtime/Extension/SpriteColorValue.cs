@@ -5,7 +5,7 @@ using UnityEngine;
 namespace StateController
 {
     [Serializable]
-    public class SpriteColorData
+    public class SpriteColorValue
     {
         [HorizontalGroup]
         [SerializeField]

@@ -211,17 +211,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5333972ccfde32d499ef5cf8faa3fdcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataName1: B
-  m_StateValues1:
+  m_GroupName1: B
+  m_ValueMappings1:
   - m_StateName: B1
     m_Value: 1
   - m_StateName: B2
     m_Value: 1
   - m_StateName: B3
     m_Value: 0
-  m_BooleanLogicType: 2
-  m_DataName2: C
-  m_StateValues2:
+  m_BooleanMode: 2
+  m_GroupName2: C
+  m_ValueMappings2:
   - m_StateName: C1
     m_Value: 0
   - m_StateName: C2
@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 766990942}
   - component: {fileID: 766990944}
   m_Layer: 0
-  m_Name: AnchoredPostion
+  m_Name: AnchoredPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,8 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0fa4798c534d5aa69224dc32a63548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataName: B
-  m_StateValues:
+  m_GroupName: B
+  m_ValueMappings:
   - m_StateName: B1
     m_Value: {x: 100, y: 0}
   - m_StateName: B2
@@ -468,8 +468,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99044c617f1ad324b90cc0837114bcb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataName: A
-  m_StateValues:
+  m_GroupName: A
+  m_ValueMappings:
   - m_StateName: A1
     m_Value:
       m_Sprite: {fileID: 0}
@@ -486,7 +486,7 @@ MonoBehaviour:
     m_Value:
       m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
       m_Color: {r: 0.29440176, g: 0.18943575, b: 0.9339623, a: 1}
-  m_SetNativeSize: 0
+  m_UseNativeSize: 0
 --- !u!114 &872484199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,8 +613,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f2cf8f930b546488f35097c7bda70c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataName: A
-  m_StateValues:
+  m_GroupName: A
+  m_ValueMappings:
   - m_StateName: A1
     m_Value: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   - m_StateName: A2
@@ -623,7 +623,7 @@ MonoBehaviour:
     m_Value: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   - m_StateName: A4
     m_Value: {fileID: 0}
-  m_SetNativeSize: 0
+  m_UseNativeSize: 0
 --- !u!1 &1154680127
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,8 +836,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b244acfa45e49a88ae3f0890a1478a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataName: C
-  m_StateValues:
+  m_GroupName: C
+  m_ValueMappings:
   - m_StateName: C1
     m_Value: C1
   - m_StateName: C2
@@ -903,7 +903,7 @@ GameObject:
   - component: {fileID: 2137466422}
   - component: {fileID: 2137466423}
   m_Layer: 0
-  m_Name: StateControllerMono
+  m_Name: StateController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1008,18 +1008,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb22ad5ff8744b80ad66edb1d7181c0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EditorSelectedDataName: A
-  m_Datas:
+  m_EditorSelectedGroupName: A
+  m_Groups:
   - m_Name: A
     m_States:
     - m_Name: A1
       m_Links:
-      - m_TargetDataName: C
-        m_TargetSelectedName: C1
+      - m_TargetGroupName: C
+        m_TargetStateName: C1
     - m_Name: A2
       m_Links:
-      - m_TargetDataName: C
-        m_TargetSelectedName: C2
+      - m_TargetGroupName: C
+        m_TargetStateName: C2
     - m_Name: A3
       m_Links: []
     - m_Name: A4

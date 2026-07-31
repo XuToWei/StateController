@@ -6,29 +6,29 @@ using UnityEngine.Events;
 
 namespace StateController
 {
-    internal partial class StateControllerStateLink
+    internal partial class StateLink
     {
-        public string EditorTargetDataName
+        public string EditorTargetGroupName
         {
-            set => m_TargetDataName = value;
-            get => m_TargetDataName;
+            set => m_TargetGroupName = value;
+            get => m_TargetGroupName;
         }
 
-        public string EditorTargetSelectedName
+        public string EditorTargetStateName
         {
-            set => m_TargetSelectedName = value;
-            get => m_TargetSelectedName;
+            set => m_TargetStateName = value;
+            get => m_TargetStateName;
         }
     }
 
-    internal partial class StateControllerState
+    internal partial class State
     {
         public string EditorName
         {
             get => m_Name;
             set => m_Name = value;
         }
-        public List<StateControllerStateLink> EditorLinks => m_Links;
+        public List<StateLink> EditorLinks => m_Links;
         // 供 SerializedProperty 按字段名导航，避免硬编码字符串路径（重命名时编译期可捕获）
         public const string EditorOnSelectedEventFieldName = nameof(m_OnSelectedEvent);
         // null 表示未添加事件
@@ -53,17 +53,17 @@ namespace StateController
         }
     }
 
-    public partial class StateControllerData
+    public partial class StateGroup
     {
-        private StateControllerMono m_EditorControllerMono;
+        private StateController m_EditorController;
 
-        internal List<StateControllerState> EditorStates => m_States;
+        internal List<State> EditorStates => m_States;
         // 供 SerializedProperty 按字段名导航，避免硬编码字符串路径
         internal const string EditorStatesFieldName = nameof(m_States);
 
-        internal string EditorSelectedName
+        internal string EditorCurrentStateName
         {
-            get => m_SelectedName;
+            get => m_CurrentStateName;
             set
             {
                 int index = -1;
@@ -76,31 +76,31 @@ namespace StateController
                     }
                 }
                 if (index < 0)
-                    throw new Exception($"State name '{value}' is not in data '{m_Name}'.");
-                m_SelectedName = value;
-                m_SelectedIndex = index;
-                foreach (var state in m_EditorControllerMono.EditorStates)
+                    throw new Exception($"State name '{value}' is not in group '{m_Name}'.");
+                m_CurrentStateName = value;
+                m_CurrentStateIndex = index;
+                foreach (var binding in m_EditorController.EditorBindings)
                 {
-                    state.EditorOnRefresh();
+                    binding.EditorApplyCurrentState();
                 }
                 foreach (var link in m_States[index].EditorLinks)
                 {
-                    var data = m_EditorControllerMono.GetData(link.EditorTargetDataName);
-                    if (data != null && !string.IsNullOrEmpty(link.EditorTargetSelectedName))
+                    var group = m_EditorController.GetGroup(link.EditorTargetGroupName);
+                    if (group != null && !string.IsNullOrEmpty(link.EditorTargetStateName))
                     {
-                        data.EditorSelectedName = link.EditorTargetSelectedName;
+                        group.EditorCurrentStateName = link.EditorTargetStateName;
                     }
                 }
-                OnSelectedNameChanged?.Invoke(m_SelectedName);
-                OnSelectedIndexChanged?.Invoke(m_SelectedIndex);
+                CurrentStateNameChanged?.Invoke(m_CurrentStateName);
+                CurrentStateIndexChanged?.Invoke(m_CurrentStateIndex);
                 EditorApplication.QueuePlayerLoopUpdate();
             }
         }
 
-        internal void EditorClearSelectedName()
+        internal void EditorClearCurrentState()
         {
-            m_SelectedName = string.Empty;
-            m_SelectedIndex = -1;
+            m_CurrentStateName = string.Empty;
+            m_CurrentStateIndex = -1;
         }
 
         internal string EditorName
@@ -109,43 +109,43 @@ namespace StateController
             set => m_Name = value;
         }
 
-        internal void EditorRefresh(StateControllerMono controllerMono)
+        internal void EditorRefresh(StateController controller)
         {
-            m_EditorControllerMono = controllerMono;
+            m_EditorController = controller;
         }
 
-        internal void EditorRefreshSelectedName()
+        internal void EditorApplyCurrentState()
         {
-            foreach (var state in m_EditorControllerMono.EditorStates)
+            foreach (var binding in m_EditorController.EditorBindings)
             {
-                state.EditorOnRefresh();
+                binding.EditorApplyCurrentState();
             }
             EditorApplication.QueuePlayerLoopUpdate();
         }
 
-        internal void EditorOnDataRename(string oldDataName, string newDataName)
+        internal void EditorOnGroupRename(string oldGroupName, string newGroupName)
         {
             foreach (var state in m_States)
             {
                 foreach (var link in state.EditorLinks)
                 {
-                    if (link.EditorTargetDataName == oldDataName)
+                    if (link.EditorTargetGroupName == oldGroupName)
                     {
-                        link.EditorTargetDataName = newDataName;
+                        link.EditorTargetGroupName = newGroupName;
                     }
                 }
             }
         }
 
-        internal void EditorOnStateRename(string dataName, string oldStateName, string newStateName)
+        internal void EditorOnStateRename(string groupName, string oldStateName, string newStateName)
         {
             foreach (var state in m_States)
             {
                 foreach (var link in state.EditorLinks)
                 {
-                    if (link.EditorTargetDataName == dataName && link.EditorTargetSelectedName == oldStateName)
+                    if (link.EditorTargetGroupName == groupName && link.EditorTargetStateName == oldStateName)
                     {
-                        link.EditorTargetSelectedName = newStateName;
+                        link.EditorTargetStateName = newStateName;
                     }
                 }
             }

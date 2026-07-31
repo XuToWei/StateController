@@ -7,7 +7,7 @@ namespace StateController
     // 单个状态对应的值（状态名 + 值合为一条数据，与控制器状态顺序无关）
     [Serializable]
     [InlineProperty]
-    internal partial class StateValue<T>
+    internal partial class StateValueMapping<T>
     {
         [HideInInspector]
         [SerializeField]
@@ -19,10 +19,10 @@ namespace StateController
         public T Value => m_Value;
     }
 
-    public abstract partial class BaseState : MonoBehaviour
+    public abstract partial class StateBinding : MonoBehaviour
     {
-        internal abstract void OnInit(StateControllerMono controllerMono);
+        internal abstract void Initialize(StateController controller);
 
-        internal abstract void OnRefresh();
+        internal abstract void RefreshBinding();
     }
 }

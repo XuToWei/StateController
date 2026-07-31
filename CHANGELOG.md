@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0] - 2026-07-31
+- 统一核心领域命名：`StateControllerMono` → `StateController`、`StateControllerData` → `StateGroup`、`StateControllerState` → `State`、`StateControllerStateLink` → `StateLink`
+- 统一绑定命名：`BaseState` → `StateBinding`、`BaseSelectableState<T>` → `StateValueBinding<T>`、`BaseBooleanLogicState` → `BooleanStateBinding`、`StateValue<T>` → `StateValueMapping<T>`
+- 当前状态 API 改用 `Current` 语义：`Set/GetSelectedName/Index` → `Set/GetCurrentStateName/Index`，`SelectedName/Index` → `CurrentStateName/Index`
+- 数据访问 API 改用 Group 语义：`GetData` → `GetGroup`，相关字段、编辑器标签与回调同步改名
+- `BooleanLogicType` → `BooleanMode`，枚举值 `None` → `Single`；底层数值仍保持 `0/1/2`
+- 内置组件统一使用 Binding 命名：`GameObjectActiveBinding`、`ImageSpriteBinding`、`ImageSpriteColorBinding`、`RectTransformAnchoredPositionBinding`、`TextContentBinding`
+- 同步更新 Demo、README 与所有源码文件名；移动原 `.meta` 文件以保持 Unity GUID
+- 本版本为破坏性命名调整，不提供旧源码 API 或旧序列化名称的兼容处理
+- 状态切换、Binding 刷新、Link 传播、UnityEvent 和回调顺序保持不变
+
 ## [1.1.0] - 2026-06-16
 - 控制器链接（Link）由一对一升级为一对多，单个状态可同时联动多个目标控制器
 - 自动迁移旧的一对一 Link 数据，升级后不丢失已有链接

@@ -2,10 +2,10 @@ using Sirenix.OdinInspector;
 
 namespace StateController
 {
-    [LabelText("Boolean Logic")]
-    public enum BooleanLogicType : byte
+    [LabelText("Boolean Mode")]
+    public enum BooleanMode : byte
     {
-        None = 0,
+        Single = 0,
         And = 1,
         Or = 2
     }
