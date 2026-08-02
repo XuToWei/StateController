@@ -8,7 +8,6 @@
 - 支持布尔值的 Single、And、Or 组合
 - 支持 State 之间的自动 Link 切换
 - 支持编辑器实时预览
-- 支持 CodeBind 代码生成
 
 ## 交流 QQ 群：949482664
 
@@ -115,10 +114,6 @@ group.CurrentStateIndexChanged += index => Debug.Log($"Index changed to: {index}
 | `ImageSpriteColorBinding` | 切换 Image 的 Sprite 和颜色 |
 | `RectTransformAnchoredPositionBinding` | 控制 RectTransform 的 anchoredPosition |
 | `TextContentBinding` | 切换 Text 的文本内容 |
-
-## CodeBind 集成
-
-如果安装了 [CodeBind](https://github.com/XuToWei/CodeBind)，添加宏定义 `STATE_CONTROLLER_CODE_BIND` 即可在绑定代码时生成状态相关代码。
 
 ## 安装方式
 
