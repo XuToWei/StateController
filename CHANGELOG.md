@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1] - 2026-08-11
+- 统一状态进入事件命名：`OnSelected` → `OnEntered`，相关运行时字段与编辑器成员同步改名
+- 布尔绑定的两组输入由数字后缀 `1/2` 改为语义化的 `Primary/Secondary`
+- 清理编辑器常量与局部变量命名，使运行时和编辑器代码保持一致
+- 以上序列化字段直接进行破坏性改名，不提供 `FormerlySerializedAs` 兼容
+- 同步更新 Demo 场景中的序列化字段名，保持示例数据有效
+
 ## [2.0.0] - 2026-07-31
 - 统一核心领域命名：`StateControllerMono` → `StateController`、`StateControllerData` → `StateGroup`、`StateControllerState` → `State`、`StateControllerStateLink` → `StateLink`
 - 统一绑定命名：`BaseState` → `StateBinding`、`BaseSelectableState<T>` → `StateValueBinding<T>`、`BaseBooleanLogicState` → `BooleanStateBinding`、`StateValue<T>` → `StateValueMapping<T>`

@@ -9,35 +9,35 @@ namespace StateController
     public partial class BooleanStateBinding
     {
         [ShowInInspector]
-        [BoxGroup("Group1")]
+        [BoxGroup("Primary Group")]
         [LabelText("Group Name")]
         [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(10)]
-        [ValueDropdown(nameof(EditorGetGroupNames1))]
-        [OnValueChanged(nameof(EditorOnSelectedGroup1))]
-        private string EditorGroupName1
+        [ValueDropdown(nameof(EditorGetPrimaryGroupNames))]
+        [OnValueChanged(nameof(EditorOnSelectedPrimaryGroup))]
+        private string EditorPrimaryGroupName
         {
-            get => m_GroupName1;
-            set => m_GroupName1 = value;
+            get => m_PrimaryGroupName;
+            set => m_PrimaryGroupName = value;
         }
 
         [ShowInInspector]
-        [BoxGroup("Group1")]
+        [BoxGroup("Primary Group")]
         [LabelText("State Values")]
         [PropertyOrder(11)]
-        [ShowIf(nameof(EditorHasSelectedGroup1))]
+        [ShowIf(nameof(EditorHasSelectedPrimaryGroup))]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true,
             HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = nameof(EditorOnStateValueBeginGUI1),
-            OnEndListElementGUI = nameof(EditorOnStateValueEndGUI1))]
+            OnBeginListElementGUI = nameof(EditorOnPrimaryStateValueBeginGUI),
+            OnEndListElementGUI = nameof(EditorOnPrimaryStateValueEndGUI))]
         [OnValueChanged(nameof(EditorApplyGroupCurrentState), true)]
-        private List<StateValueMapping<bool>> EditorValueMappings1
+        private List<StateValueMapping<bool>> EditorPrimaryValueMappings
         {
-            set => m_ValueMappings1 = value;
-            get => m_ValueMappings1;
+            set => m_PrimaryValueMappings = value;
+            get => m_PrimaryValueMappings;
         }
 
         [ShowInInspector]
@@ -50,61 +50,61 @@ namespace StateController
         }
 
         [ShowInInspector]
-        [BoxGroup("Group2")]
+        [BoxGroup("Secondary Group")]
         [LabelText("Group Name")]
         [GUIColor(0.6f, 0.8f, 1f)]
         [PropertyOrder(30)]
-        [EnableIf(nameof(EditorCanShowGroup2))]
-        [ValueDropdown(nameof(EditorGetGroupNames2))]
-        [OnValueChanged(nameof(EditorOnSelectedGroup2))]
-        private string EditorGroupName2
+        [EnableIf(nameof(EditorCanShowSecondaryGroup))]
+        [ValueDropdown(nameof(EditorGetSecondaryGroupNames))]
+        [OnValueChanged(nameof(EditorOnSelectedSecondaryGroup))]
+        private string EditorSecondaryGroupName
         {
-            get => m_GroupName2;
-            set => m_GroupName2 = value;
+            get => m_SecondaryGroupName;
+            set => m_SecondaryGroupName = value;
         }
 
         [ShowInInspector]
-        [BoxGroup("Group2")]
+        [BoxGroup("Secondary Group")]
         [LabelText("State Values")]
         [PropertyOrder(31)]
-        [EnableIf(nameof(EditorCanShowGroup2))]
-        [ShowIf(nameof(EditorHasSelectedGroup2))]
+        [EnableIf(nameof(EditorCanShowSecondaryGroup))]
+        [ShowIf(nameof(EditorHasSelectedSecondaryGroup))]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(DefaultExpandedState = true,
             HideAddButton = true,
             HideRemoveButton = true,
             DraggableItems = false,
-            OnBeginListElementGUI = nameof(EditorOnStateValueBeginGUI2),
-            OnEndListElementGUI = nameof(EditorOnStateValueEndGUI2))]
+            OnBeginListElementGUI = nameof(EditorOnSecondaryStateValueBeginGUI),
+            OnEndListElementGUI = nameof(EditorOnSecondaryStateValueEndGUI))]
         [OnValueChanged(nameof(EditorApplyGroupCurrentState), true)]
-        private List<StateValueMapping<bool>> EditorValueMappings2
+        private List<StateValueMapping<bool>> EditorSecondaryValueMappings
         {
-            set => m_ValueMappings2 = value;
-            get => m_ValueMappings2;
+            set => m_SecondaryValueMappings = value;
+            get => m_SecondaryValueMappings;
         }
 
-        private StateGroup EditorGroup1
+        private StateGroup EditorPrimaryGroup
         {
             get
             {
                 var controller = EditorController;
-                return controller == null ? null : controller.GetGroup(EditorGroupName1);
+                return controller == null ? null : controller.GetGroup(EditorPrimaryGroupName);
             }
         }
 
-        private StateGroup EditorGroup2
+        private StateGroup EditorSecondaryGroup
         {
             get
             {
                 var controller = EditorController;
-                return controller == null ? null : controller.GetGroup(EditorGroupName2);
+                return controller == null ? null : controller.GetGroup(EditorSecondaryGroupName);
             }
         }
 
         internal override void EditorRefresh()
         {
-            EditorRefreshGroup1();
-            EditorRefreshGroup2();
+            EditorRefreshPrimaryGroup();
+            EditorRefreshSecondaryGroup();
         }
 
         internal override void EditorApplyCurrentState()
@@ -112,12 +112,12 @@ namespace StateController
             InitializeTarget();
             if (EditorBooleanMode == BooleanMode.Single)
             {
-                var group1 = EditorGroup1;
-                if (group1 == null || string.IsNullOrEmpty(group1.EditorCurrentStateName))
+                var primaryGroup = EditorPrimaryGroup;
+                if (primaryGroup == null || string.IsNullOrEmpty(primaryGroup.EditorCurrentStateName))
                     return;
-                foreach (var valueMapping in EditorValueMappings1)
+                foreach (var valueMapping in EditorPrimaryValueMappings)
                 {
-                    if (valueMapping.EditorStateName == group1.EditorCurrentStateName)
+                    if (valueMapping.EditorStateName == primaryGroup.EditorCurrentStateName)
                     {
                         ApplyValue(valueMapping.EditorValue);
                         break;
@@ -126,27 +126,27 @@ namespace StateController
             }
             else
             {
-                var group1 = EditorGroup1;
-                if (group1 == null || string.IsNullOrEmpty(group1.EditorCurrentStateName))
+                var primaryGroup = EditorPrimaryGroup;
+                if (primaryGroup == null || string.IsNullOrEmpty(primaryGroup.EditorCurrentStateName))
                     return;
-                var group2 = EditorGroup2;
-                if (group2 == null || string.IsNullOrEmpty(group2.EditorCurrentStateName))
+                var secondaryGroup = EditorSecondaryGroup;
+                if (secondaryGroup == null || string.IsNullOrEmpty(secondaryGroup.EditorCurrentStateName))
                     return;
-                bool value1 = false;
-                foreach (var valueMapping in EditorValueMappings1)
+                bool primaryValue = false;
+                foreach (var valueMapping in EditorPrimaryValueMappings)
                 {
-                    if (valueMapping.EditorStateName == group1.EditorCurrentStateName)
+                    if (valueMapping.EditorStateName == primaryGroup.EditorCurrentStateName)
                     {
-                        value1 = valueMapping.EditorValue;
+                        primaryValue = valueMapping.EditorValue;
                         break;
                     }
                 }
-                bool value2 = false;
-                foreach (var valueMapping in EditorValueMappings2)
+                bool secondaryValue = false;
+                foreach (var valueMapping in EditorSecondaryValueMappings)
                 {
-                    if (valueMapping.EditorStateName == group2.EditorCurrentStateName)
+                    if (valueMapping.EditorStateName == secondaryGroup.EditorCurrentStateName)
                     {
-                        value2 = valueMapping.EditorValue;
+                        secondaryValue = valueMapping.EditorValue;
                         break;
                     }
                 }
@@ -154,10 +154,10 @@ namespace StateController
                 switch (EditorBooleanMode)
                 {
                     case BooleanMode.And:
-                        result = value1 && value2;
+                        result = primaryValue && secondaryValue;
                         break;
                     case BooleanMode.Or:
-                        result = value1 || value2;
+                        result = primaryValue || secondaryValue;
                         break;
                 }
                 ApplyValue(result);
@@ -166,25 +166,25 @@ namespace StateController
 
         internal override void EditorOnGroupRename(string oldGroupName, string newGroupName)
         {
-            if (EditorGroupName1 == oldGroupName)
+            if (EditorPrimaryGroupName == oldGroupName)
             {
-                EditorGroupName1 = newGroupName;
+                EditorPrimaryGroupName = newGroupName;
             }
-            else if (EditorGroupName2 == oldGroupName)
+            else if (EditorSecondaryGroupName == oldGroupName)
             {
-                EditorGroupName2 = newGroupName;
+                EditorSecondaryGroupName = newGroupName;
             }
         }
 
         internal override void EditorOnGroupStateRename(string groupName, string oldStateName, string newStateName)
         {
-            if (EditorGroupName1 == groupName)
+            if (EditorPrimaryGroupName == groupName)
             {
-                EditorRenameStateMapping(EditorValueMappings1, oldStateName, newStateName);
+                EditorRenameStateMapping(EditorPrimaryValueMappings, oldStateName, newStateName);
             }
-            if (EditorGroupName2 == groupName)
+            if (EditorSecondaryGroupName == groupName)
             {
-                EditorRenameStateMapping(EditorValueMappings2, oldStateName, newStateName);
+                EditorRenameStateMapping(EditorSecondaryValueMappings, oldStateName, newStateName);
             }
         }
 
@@ -202,34 +202,34 @@ namespace StateController
 
         internal override bool EditorIsBoundTo(StateGroup group)
         {
-            if (EditorGroupName1 == group.EditorName || (EditorBooleanMode != BooleanMode.Single && EditorGroupName2 == group.EditorName))
+            if (EditorPrimaryGroupName == group.EditorName || (EditorBooleanMode != BooleanMode.Single && EditorSecondaryGroupName == group.EditorName))
             {
                 return true;
             }
             return false;
         }
 
-        private bool EditorHasSelectedGroup1()
+        private bool EditorHasSelectedPrimaryGroup()
         {
             if (EditorController == null)
                 return false;
-            return EditorGroup1 != null;
+            return EditorPrimaryGroup != null;
         }
 
-        private bool EditorHasSelectedGroup2()
+        private bool EditorHasSelectedSecondaryGroup()
         {
             if (EditorController == null)
                 return false;
-            return EditorGroup2 != null && EditorBooleanMode != BooleanMode.Single;
+            return EditorSecondaryGroup != null && EditorBooleanMode != BooleanMode.Single;
         }
 
-        private bool EditorCanShowGroup2()
+        private bool EditorCanShowSecondaryGroup()
         {
             return EditorBooleanMode != BooleanMode.Single;
         }
 
         private readonly List<string> m_EditorEmptyStringList = new List<string>();
-        private List<string> EditorGetGroupNames1()
+        private List<string> EditorGetPrimaryGroupNames()
         {
             var controller = EditorController;
             if (controller == null)
@@ -237,38 +237,38 @@ namespace StateController
             return controller.EditorGetAllGroupNames();
         }
         
-        private List<string> EditorGetGroupNames2()
+        private List<string> EditorGetSecondaryGroupNames()
         {
             var controller = EditorController;
             if (controller == null)
                 return m_EditorEmptyStringList;
             var names = controller.EditorGetAllGroupNames();
-            names.Remove(EditorGroupName1);
+            names.Remove(EditorPrimaryGroupName);
             return names;
         }
 
-        private void EditorRefreshGroup1()
+        private void EditorRefreshPrimaryGroup()
         {
-            var group1 = EditorGroup1;
-            if (group1 == null)
+            var primaryGroup = EditorPrimaryGroup;
+            if (primaryGroup == null)
             {
-                EditorGroupName1 = string.Empty;
-                EditorValueMappings1.Clear();
+                EditorPrimaryGroupName = string.Empty;
+                EditorPrimaryValueMappings.Clear();
                 return;
             }
-            EditorAlignOne(group1, EditorValueMappings1);
+            EditorAlignOne(primaryGroup, EditorPrimaryValueMappings);
         }
 
-        private void EditorRefreshGroup2()
+        private void EditorRefreshSecondaryGroup()
         {
-            var group2 = EditorGroup2;
-            if (group2 == null)
+            var secondaryGroup = EditorSecondaryGroup;
+            if (secondaryGroup == null)
             {
-                EditorGroupName2 = string.Empty;
-                EditorValueMappings2.Clear();
+                EditorSecondaryGroupName = string.Empty;
+                EditorSecondaryValueMappings.Clear();
                 return;
             }
-            EditorAlignOne(group2, EditorValueMappings2);
+            EditorAlignOne(secondaryGroup, EditorSecondaryValueMappings);
         }
 
         // 按 Group 的当前状态顺序重建每条（状态名, 值）映射，按名字保留已有值、缺补默认、多删
@@ -310,27 +310,27 @@ namespace StateController
             m_EditorAlignedValueMappings.Clear();
         }
 
-        private void EditorOnSelectedGroup1()
+        private void EditorOnSelectedPrimaryGroup()
         {
-            if (EditorGroupName1 == EditorGroupName2)
+            if (EditorPrimaryGroupName == EditorSecondaryGroupName)
             {
-                EditorGroupName2 = string.Empty;
-                EditorRefreshGroup2();
+                EditorSecondaryGroupName = string.Empty;
+                EditorRefreshSecondaryGroup();
             }
-            EditorRefreshGroup1();
+            EditorRefreshPrimaryGroup();
             EditorApplyGroupCurrentState();
         }
 
-        private void EditorOnSelectedGroup2()
+        private void EditorOnSelectedSecondaryGroup()
         {
             var controller = EditorController;
             if (controller == null)
                 return;
             foreach (var groupName in controller.EditorGetAllGroupNames())
             {
-                if (groupName != EditorGroupName1 && groupName == EditorGroupName2)
+                if (groupName != EditorPrimaryGroupName && groupName == EditorSecondaryGroupName)
                 {
-                    EditorRefreshGroup2();
+                    EditorRefreshSecondaryGroup();
                     break;
                 }
             }
@@ -339,22 +339,22 @@ namespace StateController
 
         private void EditorApplyGroupCurrentState()
         {
-            var group1 = EditorGroup1;
-            if (group1 != null)
+            var primaryGroup = EditorPrimaryGroup;
+            if (primaryGroup != null)
             {
-                group1.EditorApplyCurrentState();
+                primaryGroup.EditorApplyCurrentState();
             }
-            var group2 = EditorGroup2;
-            if (group2 != null)
+            var secondaryGroup = EditorSecondaryGroup;
+            if (secondaryGroup != null)
             {
-                group2.EditorApplyCurrentState();
+                secondaryGroup.EditorApplyCurrentState();
             }
         }
         
-        private void EditorOnStateValueBeginGUI1(int selectionIndex)
+        private void EditorOnPrimaryStateValueBeginGUI(int selectionIndex)
         {
             var controller = EditorController;
-            var stateValues = EditorValueMappings1;
+            var stateValues = EditorPrimaryValueMappings;
             if (controller == null || stateValues == null || selectionIndex >= stateValues.Count)
                 return;
             GUILayout.BeginHorizontal();
@@ -367,15 +367,15 @@ namespace StateController
             GUI.enabled = true;
         }
 
-        private void EditorOnStateValueEndGUI1(int selectionIndex)
+        private void EditorOnPrimaryStateValueEndGUI(int selectionIndex)
         {
             var color = GUI.color;
             var controller = EditorController;
-            var stateValues = EditorValueMappings1;
+            var stateValues = EditorPrimaryValueMappings;
             if (controller == null || stateValues == null || selectionIndex >= stateValues.Count)
                 return;
             GUI.enabled = true;
-            var group = EditorGroup1;
+            var group = EditorPrimaryGroup;
             var currentStateName = stateValues[selectionIndex].EditorStateName;
             if (group.EditorCurrentStateName == currentStateName)
             {
@@ -390,10 +390,10 @@ namespace StateController
             GUILayout.EndHorizontal();
         }
 
-        private void EditorOnStateValueBeginGUI2(int selectionIndex)
+        private void EditorOnSecondaryStateValueBeginGUI(int selectionIndex)
         {
             var controller = EditorController;
-            var stateValues = EditorValueMappings2;
+            var stateValues = EditorSecondaryValueMappings;
             if (controller == null || stateValues == null || selectionIndex >= stateValues.Count)
                 return;
             GUILayout.BeginHorizontal();
@@ -406,15 +406,15 @@ namespace StateController
             GUI.enabled = true;
         }
 
-        private void EditorOnStateValueEndGUI2(int selectionIndex)
+        private void EditorOnSecondaryStateValueEndGUI(int selectionIndex)
         {
             var color = GUI.color;
             var controller = EditorController;
-            var stateValues = EditorValueMappings2;
+            var stateValues = EditorSecondaryValueMappings;
             if (controller == null || stateValues == null || selectionIndex >= stateValues.Count)
                 return;
             GUI.enabled = true;
-            var group = EditorGroup2;
+            var group = EditorSecondaryGroup;
             var currentStateName = stateValues[selectionIndex].EditorStateName;
             if (group.EditorCurrentStateName == currentStateName)
             {

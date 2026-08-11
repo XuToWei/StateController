@@ -26,14 +26,14 @@ namespace StateController
         [HideInInspector]
         [SerializeField]
         private List<StateLink> m_Links = new List<StateLink>();
-        // 状态被选中时触发的可视化事件（类似 Button 的 onClick），由 StateController 编辑器手动绘制
-        // 用 [SerializeReference] 让 m_OnSelectedEvent 可为 null（普通序列化的 UnityEvent 反序列化后必为非空），null 即表示“未添加事件”
+        // 状态进入时触发的可视化事件（类似 Button 的 onClick），由 StateController 编辑器手动绘制
+        // 用 [SerializeReference] 让 m_OnEnteredEvent 可为 null（普通序列化的 UnityEvent 反序列化后必为非空），null 即表示“未添加事件”
         [HideInInspector]
         [SerializeReference]
-        private UnityEvent m_OnSelectedEvent;
+        private UnityEvent m_OnEnteredEvent;
         public string Name => m_Name;
         public List<StateLink> Links => m_Links;
-        public UnityEvent OnSelected => m_OnSelectedEvent;
+        public UnityEvent OnEntered => m_OnEnteredEvent;
     }
 
     [Serializable]
@@ -105,9 +105,9 @@ namespace StateController
                     targetGroup.CurrentStateName = link.TargetStateName;
                 }
             }
-            if (currentState.OnSelected != null)
+            if (currentState.OnEntered != null)
             {
-                currentState.OnSelected.Invoke();
+                currentState.OnEntered.Invoke();
             }
             CurrentStateNameChanged?.Invoke(m_CurrentStateName);
             CurrentStateIndexChanged?.Invoke(m_CurrentStateIndex);

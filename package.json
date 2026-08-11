@@ -1,6 +1,6 @@
 {
   "name": "me.xw.statecontroller",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "displayName": "State Controller",
   "description": "A universal state controller for Unity with extensible state bindings",
   "repository": {

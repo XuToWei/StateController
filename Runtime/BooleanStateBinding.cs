@@ -7,11 +7,11 @@ namespace StateController
     {
         [HideInInspector]
         [SerializeField]
-        private string m_GroupName1 = string.Empty;
+        private string m_PrimaryGroupName = string.Empty;
 
         [HideInInspector]
         [SerializeField]
-        private List<StateValueMapping<bool>> m_ValueMappings1 = new List<StateValueMapping<bool>>();
+        private List<StateValueMapping<bool>> m_PrimaryValueMappings = new List<StateValueMapping<bool>>();
 
         [HideInInspector]
         [SerializeField]
@@ -19,24 +19,24 @@ namespace StateController
 
         [HideInInspector]
         [SerializeField]
-        private string m_GroupName2 = string.Empty;
+        private string m_SecondaryGroupName = string.Empty;
 
         [HideInInspector]
         [SerializeField]
-        private List<StateValueMapping<bool>> m_ValueMappings2 = new List<StateValueMapping<bool>>();
+        private List<StateValueMapping<bool>> m_SecondaryValueMappings = new List<StateValueMapping<bool>>();
 
-        private string m_CurrentStateName1;
-        private string m_CurrentStateName2;
-        private StateGroup m_Group1;
-        private StateGroup m_Group2;
+        private string m_PrimaryCurrentStateName;
+        private string m_SecondaryCurrentStateName;
+        private StateGroup m_PrimaryGroup;
+        private StateGroup m_SecondaryGroup;
 
         internal override void Initialize(StateController controller)
         {
             InitializeTarget();
-            m_Group1 = controller.GetGroup(m_GroupName1);
+            m_PrimaryGroup = controller.GetGroup(m_PrimaryGroupName);
             if (m_BooleanMode != BooleanMode.Single)
             {
-                m_Group2 = controller.GetGroup(m_GroupName2);
+                m_SecondaryGroup = controller.GetGroup(m_SecondaryGroupName);
             }
         }
 
@@ -44,14 +44,14 @@ namespace StateController
         {
             if (m_BooleanMode == BooleanMode.Single)
             {
-                if (m_Group1 == null || string.IsNullOrEmpty(m_Group1.CurrentStateName))
+                if (m_PrimaryGroup == null || string.IsNullOrEmpty(m_PrimaryGroup.CurrentStateName))
                     return;
-                if (m_Group1.CurrentStateName == m_CurrentStateName1)
+                if (m_PrimaryGroup.CurrentStateName == m_PrimaryCurrentStateName)
                     return;
-                m_CurrentStateName1 = m_Group1.CurrentStateName;
-                foreach (var valueMapping in m_ValueMappings1)
+                m_PrimaryCurrentStateName = m_PrimaryGroup.CurrentStateName;
+                foreach (var valueMapping in m_PrimaryValueMappings)
                 {
-                    if (valueMapping.StateName == m_CurrentStateName1)
+                    if (valueMapping.StateName == m_PrimaryCurrentStateName)
                     {
                         ApplyValue(valueMapping.Value);
                         break;
@@ -60,29 +60,29 @@ namespace StateController
             }
             else
             {
-                if (m_Group1 == null || string.IsNullOrEmpty(m_Group1.CurrentStateName))
+                if (m_PrimaryGroup == null || string.IsNullOrEmpty(m_PrimaryGroup.CurrentStateName))
                     return;
-                if (m_Group2 == null || string.IsNullOrEmpty(m_Group2.CurrentStateName))
+                if (m_SecondaryGroup == null || string.IsNullOrEmpty(m_SecondaryGroup.CurrentStateName))
                     return;
-                if (m_Group1.CurrentStateName == m_CurrentStateName1 && m_Group2.CurrentStateName == m_CurrentStateName2)
+                if (m_PrimaryGroup.CurrentStateName == m_PrimaryCurrentStateName && m_SecondaryGroup.CurrentStateName == m_SecondaryCurrentStateName)
                     return;
-                m_CurrentStateName1 = m_Group1.CurrentStateName;
-                m_CurrentStateName2 = m_Group2.CurrentStateName;
-                bool value1 = false;
-                foreach (var valueMapping in m_ValueMappings1)
+                m_PrimaryCurrentStateName = m_PrimaryGroup.CurrentStateName;
+                m_SecondaryCurrentStateName = m_SecondaryGroup.CurrentStateName;
+                bool primaryValue = false;
+                foreach (var valueMapping in m_PrimaryValueMappings)
                 {
-                    if (valueMapping.StateName == m_CurrentStateName1)
+                    if (valueMapping.StateName == m_PrimaryCurrentStateName)
                     {
-                        value1 = valueMapping.Value;
+                        primaryValue = valueMapping.Value;
                         break;
                     }
                 }
-                bool value2 = false;
-                foreach (var valueMapping in m_ValueMappings2)
+                bool secondaryValue = false;
+                foreach (var valueMapping in m_SecondaryValueMappings)
                 {
-                    if (valueMapping.StateName == m_CurrentStateName2)
+                    if (valueMapping.StateName == m_SecondaryCurrentStateName)
                     {
-                        value2 = valueMapping.Value;
+                        secondaryValue = valueMapping.Value;
                         break;
                     }
                 }
@@ -90,10 +90,10 @@ namespace StateController
                 switch (m_BooleanMode)
                 {
                     case BooleanMode.And:
-                        result = value1 && value2;
+                        result = primaryValue && secondaryValue;
                         break;
                     case BooleanMode.Or:
-                        result = value1 || value2;
+                        result = primaryValue || secondaryValue;
                         break;
                 }
                 ApplyValue(result);

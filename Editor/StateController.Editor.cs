@@ -10,7 +10,7 @@ namespace StateController
 {
     public partial class StateController
     {
-        private const float ConstHorizontalButtonWidth = 110f;
+        private const float HorizontalButtonWidth = 110f;
 
         private static TextEditor s_TextEditor;
         private static TextEditor TextEditor
@@ -33,10 +33,10 @@ namespace StateController
                 m_EditorBindings.Clear();
                 GetComponentsInChildren<StateBinding>(true, m_EditorBindings);
                 //不是该 Controller 的子节点就移除
-                GameObject selfGo = gameObject;
+                GameObject controllerGameObject = gameObject;
                 for(int i = m_EditorBindings.Count - 1; i >= 0; i--)
                 {
-                    if (m_EditorBindings[i].gameObject != selfGo && m_EditorBindings[i].GetComponentInParent<StateController>(true) != this)
+                    if (m_EditorBindings[i].gameObject != controllerGameObject && m_EditorBindings[i].GetComponentInParent<StateController>(true) != this)
                     {
                         m_EditorBindings.RemoveAt(i);
                     }
@@ -87,7 +87,7 @@ namespace StateController
         }
 
         [BoxGroup("Group")]
-        [HorizontalGroup("Group/Edit", Width = ConstHorizontalButtonWidth * 0.5f)]
+        [HorizontalGroup("Group/Edit", Width = HorizontalButtonWidth * 0.5f)]
         [GUIColor(0, 1, 0)]
         [Button("Add")]
         [PropertyOrder(25)]
@@ -118,7 +118,7 @@ namespace StateController
         private StateGroup EditorSelectedGroup => GetGroup(m_EditorSelectedGroupName);
 
         [BoxGroup("Group")]
-        [HorizontalGroup("Group/", Width = ConstHorizontalButtonWidth * 0.5f - 15f)]
+        [HorizontalGroup("Group/", Width = HorizontalButtonWidth * 0.5f - 15f)]
         [GUIColor(0, 1, 0)]
         [Button("Copy")]
         [PropertyOrder(21)]
@@ -129,7 +129,7 @@ namespace StateController
         }
 
         [BoxGroup("Group")]
-        [HorizontalGroup("Group/", Width = ConstHorizontalButtonWidth * 0.5f - 10f)]
+        [HorizontalGroup("Group/", Width = HorizontalButtonWidth * 0.5f - 10f)]
         [GUIColor(1, 1, 0)]
         [Button("Paste")]
         [PropertyOrder(22)]
@@ -194,7 +194,7 @@ namespace StateController
         private string m_EditorGroupNameInput;
 
         [BoxGroup("Group")]
-        [HorizontalGroup("Group/Edit", Width = ConstHorizontalButtonWidth * 0.5f)]
+        [HorizontalGroup("Group/Edit", Width = HorizontalButtonWidth * 0.5f)]
         [Button("Rename")]
         [PropertyOrder(26)]
         [EnableIf(nameof(EditorCheckCanRenameGroup))]
@@ -242,7 +242,7 @@ namespace StateController
         private string m_EditorNewStateName;
 
         [BoxGroup("Group/State")]
-        [HorizontalGroup("Group/State/Edit", Width = ConstHorizontalButtonWidth * 0.5f)]
+        [HorizontalGroup("Group/State/Edit", Width = HorizontalButtonWidth * 0.5f)]
         [GUIColor(0, 1, 0)]
         [Button("Add")]
         [PropertyOrder(31)]
@@ -491,7 +491,7 @@ namespace StateController
                 GUILayout.EndHorizontal();
                 // 改名时仍然绘制该状态的 link、event，保持编辑器内容不变
                 EditorDrawStateLinks(selectedGroup, selectionIndex);
-                EditorDrawStateOnSelectedEvent(selectedGroup, selectionIndex);
+                EditorDrawStateOnEnteredEvent(selectedGroup, selectionIndex);
                 GUILayout.EndVertical();
                 return;
             }
@@ -533,13 +533,13 @@ namespace StateController
             }
             GUI.color = color;
             GUI.enabled = true;
-            // Add Event 按钮始终显示；已添加事件（m_OnSelectedEvent 非 null）后置灰不可点击，事件在下方绘制并提供删除按钮（类似 Button 的 onClick）
-            GUI.enabled = currentState.EditorOnSelectedEvent == null;
+            // Add Event 按钮始终显示；已添加事件（m_OnEnteredEvent 非 null）后置灰不可点击，事件在下方绘制并提供删除按钮（类似 Button 的 onClick）
+            GUI.enabled = currentState.EditorOnEnteredEvent == null;
             GUI.color = new Color(0.95f, 0.7f, 0.65f);
             if (GUILayout.Button("Add Event", GUILayout.ExpandWidth(false)))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Add Event");
-                currentState.EditorOnSelectedEvent = new UnityEvent();
+                currentState.EditorOnEnteredEvent = new UnityEvent();
             }
             GUI.color = color;
             GUI.enabled = true;
@@ -570,7 +570,7 @@ namespace StateController
             EditorDrawStateLinks(selectedGroup, selectionIndex);
 
             // 展示该状态的可视化 event（单个，类似 Button 的 onClick）
-            EditorDrawStateOnSelectedEvent(selectedGroup, selectionIndex);
+            EditorDrawStateOnEnteredEvent(selectedGroup, selectionIndex);
 
             GUILayout.EndVertical();
         }
@@ -674,11 +674,11 @@ namespace StateController
             }
         }
 
-        private void EditorDrawStateOnSelectedEvent(StateGroup selectedGroup, int selectionIndex)
+        private void EditorDrawStateOnEnteredEvent(StateGroup selectedGroup, int selectionIndex)
         {
             var state = selectedGroup.EditorStates[selectionIndex];
-            // 未添加事件（m_OnSelectedEvent 为 null）则不显示
-            if (state.EditorOnSelectedEvent == null)
+            // 未添加事件（m_OnEnteredEvent 为 null）则不显示
+            if (state.EditorOnEnteredEvent == null)
                 return;
             int groupIndex = EditorGroups.IndexOf(selectedGroup);
             if (groupIndex < 0)
@@ -697,7 +697,7 @@ namespace StateController
             if (remove)
             {
                 Undo.RegisterCompleteObjectUndo(this, "Remove Event");
-                state.EditorOnSelectedEvent = null;
+                state.EditorOnEnteredEvent = null;
                 return;
             }
             // 事件本体：用 SerializedObject 走 Unity 原生 UnityEventDrawer 绘制可视化（对象 + 方法 + 参数）事件
@@ -709,7 +709,7 @@ namespace StateController
                 .GetArrayElementAtIndex(groupIndex)
                 .FindPropertyRelative(StateGroup.EditorStatesFieldName)
                 .GetArrayElementAtIndex(selectionIndex)
-                .FindPropertyRelative(State.EditorOnSelectedEventFieldName);
+                .FindPropertyRelative(State.EditorOnEnteredEventFieldName);
             if (eventProp != null)
             {
                 GUILayout.BeginHorizontal();

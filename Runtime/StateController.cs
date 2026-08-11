@@ -28,10 +28,10 @@ namespace StateController
             m_Bindings.Clear();
             GetComponentsInChildren<StateBinding>(true, m_Bindings);
             //不是该控制器的子节点就移除
-            GameObject selfGameObject = gameObject;
+            GameObject controllerGameObject = gameObject;
             for(int i = m_Bindings.Count - 1; i >= 0; i--)
             {
-                if (m_Bindings[i].gameObject != selfGameObject && m_Bindings[i].GetComponentInParent<StateController>(true) != this)
+                if (m_Bindings[i].gameObject != controllerGameObject && m_Bindings[i].GetComponentInParent<StateController>(true) != this)
                 {
                     m_Bindings.RemoveAt(i);
                 }

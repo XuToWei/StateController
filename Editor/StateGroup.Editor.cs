@@ -30,12 +30,12 @@ namespace StateController
         }
         public List<StateLink> EditorLinks => m_Links;
         // 供 SerializedProperty 按字段名导航，避免硬编码字符串路径（重命名时编译期可捕获）
-        public const string EditorOnSelectedEventFieldName = nameof(m_OnSelectedEvent);
+        public const string EditorOnEnteredEventFieldName = nameof(m_OnEnteredEvent);
         // null 表示未添加事件
-        public UnityEvent EditorOnSelectedEvent
+        public UnityEvent EditorOnEnteredEvent
         {
-            get => m_OnSelectedEvent;
-            set => m_OnSelectedEvent = value;
+            get => m_OnEnteredEvent;
+            set => m_OnEnteredEvent = value;
         }
 
         // 改名编辑态（仅编辑器内 UI 用，不序列化）
