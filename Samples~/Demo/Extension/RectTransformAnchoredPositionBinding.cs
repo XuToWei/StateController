@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace StateController
+namespace StateController.Demo
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]

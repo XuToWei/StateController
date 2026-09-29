@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace StateController
+namespace StateController.Demo
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Image))]

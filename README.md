@@ -107,13 +107,24 @@ group.CurrentStateIndexChanged += index => Debug.Log($"Index changed to: {index}
 
 ## 内置 Binding
 
+Runtime 仅内置 `GameObjectActiveBinding`，核心程序集不依赖 uGUI。
+
 | 类名 | 功能 |
 |------|------|
 | `GameObjectActiveBinding` | 控制 GameObject 激活状态 |
+
+## 示例 Binding
+
+其他扩展位于 `Samples~/Demo/Extension`，使用 `StateController.Demo` 命名空间。在 Package Manager 中选中 State Controller，在 **Samples** 中导入 **Demo** 即可使用；Demo 需要安装 Unity UI（`com.unity.ugui`）。
+
+| 类名 | 功能 |
+|------|------|
 | `ImageSpriteBinding` | 切换 Image 的 Sprite |
 | `ImageSpriteColorBinding` | 切换 Image 的 Sprite 和颜色 |
 | `RectTransformAnchoredPositionBinding` | 控制 RectTransform 的 anchoredPosition |
 | `TextContentBinding` | 切换 Text 的文本内容 |
+
+`ImageSpriteColorBinding` 使用的 `SpriteColorValue` 也随 Demo 提供。已有项目若使用了这些扩展，升级后需导入 Demo，以继续解析组件引用。
 
 ## 安装方式
 

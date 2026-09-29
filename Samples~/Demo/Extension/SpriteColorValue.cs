@@ -2,7 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace StateController
+namespace StateController.Demo
 {
     [Serializable]
     public class SpriteColorValue
